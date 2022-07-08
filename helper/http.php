@@ -51,7 +51,7 @@ function urlPathImage() {
     if (isEnvironmentLocal()) {
         return "http://192.168.68.101:8888/wikujang-web/"."uploads/"; 
     } else {
-        return "https://wikujang.site/dashboard/uploads/";
+        return "https://wikujang.site/apiv1/uploads/";
     }
 }
 
