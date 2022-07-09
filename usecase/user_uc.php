@@ -265,4 +265,40 @@ function getUserPhoneById($id) {
         return NULL;
     }
 }
+
+
+function getAllUser() {
+    try {
+        $connn = callDb();
+        $array = array();
+
+        $sql = "SELECT * FROM user";
+        $result = $connn->query($sql);
+        while($row = $result->fetch_assoc()) {
+            $data = new \stdClass();
+            $data->id = (int) $row["user_id"];
+            $data->phone = $row["phone"];
+            $data->fullName = $row["fullname"];
+            $data->userName = $row["username"];
+            $data->password = $row["password"];
+            $data->email = $row["email"];
+            $data->createdAt = $row["created_at"];
+            $data->updatedAt = $row["updated_at"];
+            $data->deletedAt = $row["deleted_at"];
+            array_push($array, $data);
+        }
+        $resultData = new stdClass();
+        $resultData->success = true;
+        $resultData->data = $array;
+        return $resultData;
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        response(500, "$error");
+
+        $resultData = new stdClass();
+        $resultData->success = false;
+        $resultData->data = NULL;
+        return $resultData;
+    }
+}
 ?>
