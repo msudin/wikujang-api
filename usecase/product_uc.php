@@ -42,7 +42,7 @@ function createProduct($body) {
         return true;
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "Create product exception -> $error");
+        response(500, "$error");
         return false;
     }
 }
@@ -88,7 +88,7 @@ function getAllProduct($limit = 0) {
         return $resultData;
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "Get all product exception -> $error");
+        response(500, "$error");
 
         $resultData = new stdClass();
         $resultData->success = false;
@@ -140,7 +140,7 @@ function getProductMe($warungId) {
         return $resultData;
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "Get all product exception -> $error");
+        response(500, "$error");
 
         $resultData = new stdClass();
         $resultData->success = false;

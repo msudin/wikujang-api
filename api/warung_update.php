@@ -10,14 +10,9 @@ try {
             $headerToken = headerToken();
             $dToken = validateToken($headerToken);
             if (!empty($dToken)) {
-                $resultWarung = getWarungById($dToken->userId);
-                if ($resultWarung->success == true) {
-                    $isSuccess = updateWarung($entityData, $resultWarung->data->id);
-                    if ($isSuccess) {
-                        response(200, "Berhasil update warung");
-                    }
-                } else {
-                    response(400);
+                $isSuccess = updateWarung($entityData, $dToken->warungId);
+                if ($isSuccess) {
+                    response(200, "Berhasil update warung");
                 }
             }
         } else {
