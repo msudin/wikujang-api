@@ -70,7 +70,7 @@ function getAllWarung() {
             $data->id = $row['warung_id'];
             $data->userId = (int)$row['user_id'];
             $data->name = $row['name'];
-            $data->username = $row['username'];
+            // $data->username = $row['username'];
             $data->description = $row['description'];
             $data->isOpen = filter_var($row['is_open'], FILTER_VALIDATE_BOOLEAN);
             $data->openTime = $row['open_time'];
@@ -88,9 +88,6 @@ function getAllWarung() {
             }
             $data->latitude = $row['latitude'];
             $data->longitude = $row['longitude'];
-            $data->createdAt = $row['created_at'];
-            $data->updatedAt = $row['updated_at'];
-            $data->deletedAt = $row['deleted_at'];
             array_push($array, $data);
         }
         $resultData = new stdClass();
@@ -108,7 +105,7 @@ function getAllWarung() {
     }
 }
 
-function getWarungById($id = NULL) {
+function getWarungByUserId($id = NULL) {
     try {
         $conn = callDb();
         $data = new stdClass();
@@ -119,6 +116,7 @@ function getWarungById($id = NULL) {
         FROM `file` f
         RIGHT JOIN `warung` w ON f.file_id = w.image_id WHERE w.user_id=$id";
         $result = $conn->query($sql);
+        
         while($row = $result->fetch_assoc()) {
             $data->id = $row['warung_id'];
             $data->userId = (int)$row['user_id'];
@@ -127,7 +125,7 @@ function getWarungById($id = NULL) {
                 $data->phone = $dProfile->phone;
             }
             $data->name = $row['name'];
-            $data->username = $row['username'];
+            // $data->username = $row['username'];
             $data->description = $row['description'];
             $data->isOpen = filter_var($row['is_open'], FILTER_VALIDATE_BOOLEAN);
             $data->openTime = $row['open_time'];
@@ -142,7 +140,6 @@ function getWarungById($id = NULL) {
             $data->address = null;
             $temp->addressId = $row['address_id'];
             if (!empty($temp->addressId)) {
-                // query get detail Address;
                 $resultAddress = getAddressDetail($temp->addressId);
                 if ($resultAddress->success = true) {
                     $data->address = $resultAddress->data;
@@ -152,9 +149,59 @@ function getWarungById($id = NULL) {
             } 
             $data->latitude = $row['latitude'];
             $data->longitude = $row['longitude'];
-            $data->createdAt = $row['created_at'];
-            $data->updatedAt = $row['updated_at'];
-            $data->deletedAt = $row['deleted_at'];
+            return resultBody(true, $data);
+        } 
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        response(500, $error);
+        return resultBody();
+    }
+}
+
+function getWarungById($id) {
+    try {
+        $conn = callDb();
+        $data = new stdClass();
+        $result = new stdClass();
+        $temp = new stdClass();
+
+        $sql = "SELECT f.*, w.*
+        FROM `file` f
+        RIGHT JOIN `warung` w ON f.file_id = w.image_id WHERE warung_id='$id'";
+        $result = $conn->query($sql);
+        
+        while($row = $result->fetch_assoc()) {
+            $data->id = $row['warung_id'];
+            $data->userId = (int)$row['user_id'];
+            if (!empty($data->userId)) {
+                $dProfile = getUserPhoneById($data->userId);
+                $data->phone = $dProfile->phone;
+            }
+            $data->name = $row['name'];
+            // $data->username = $row['username'];
+            $data->description = $row['description'];
+            $data->isOpen = filter_var($row['is_open'], FILTER_VALIDATE_BOOLEAN);
+            $data->openTime = $row['open_time'];
+            $data->closedTime = $row['closed_time'];
+            $data->rating = $row['rating'];
+            $data->views = (int)$row['views'];
+            $data->imageId = $row['image_id'];
+            $data->imageUrl = "";
+            if (!empty($data->imageId)) {
+                $data->imageUrl = urlPathImage()."".$row["file_name"];
+            }
+            $data->address = null;
+            $temp->addressId = $row['address_id'];
+            if (!empty($temp->addressId)) {
+                $resultAddress = getAddressDetail($temp->addressId);
+                if ($resultAddress->success = true) {
+                    $data->address = $resultAddress->data;
+                } else {
+                    return;
+                }   
+            } 
+            $data->latitude = $row['latitude'];
+            $data->longitude = $row['longitude'];
             return resultBody(true, $data);
         } 
     } catch (Exception $e) {
@@ -177,6 +224,7 @@ function updateWarung($bodyRequest, $warungId) {
         if (!empty($bodyRequest['name'])) {
             $name = $bodyRequest['name'];
             $sql = $sql.", `name` = '$name'";
+            $sql = $sql.", `username` = '$name'";
         }
 
         if (!empty($bodyRequest['description'])) { 

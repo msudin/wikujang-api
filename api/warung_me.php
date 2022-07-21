@@ -8,7 +8,7 @@ try {
         if (!empty($headerToken)) {
             $dToken = validateToken($headerToken);
             if ($dToken != NULL) { 
-                $resultWarung = getWarungById($dToken->userId);
+                $resultWarung = getWarungByUserId($dToken->userId);
                 if ($resultWarung->success == true) {
                     response(200, "record found", $resultWarung->data);
                 } else {

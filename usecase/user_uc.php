@@ -108,9 +108,6 @@ function getUserById($userId) {
                 }
                 $data->isActive = filter_var($row['active'], FILTER_VALIDATE_BOOLEAN);
                 $data->role = $row['role'];
-                $data->createdAt = $row["created_at"];
-                $data->updatedAt = $row["updated_at"];
-                $data->deletedAt = $row["deleted_at"];
                 return $data;
             }
         } else {
@@ -283,9 +280,6 @@ function getAllUser() {
             $data->password = $row["password"];
             $data->email = $row["email"];
             $data->role = $row["role"];
-            $data->createdAt = $row["created_at"];
-            $data->updatedAt = $row["updated_at"];
-            $data->deletedAt = $row["deleted_at"];
             array_push($array, $data);
         }
         $resultData = new stdClass();

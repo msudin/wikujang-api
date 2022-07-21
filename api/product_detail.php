@@ -5,7 +5,10 @@ try {
     clearstatcache();
     if (requestMethod() == "GET") {
         if (!empty($_GET['id'])) {
-            response(200);
+            $dProduct = getProductById($_GET['id']);
+            if ($dProduct->success == true) {
+                response(200, "record found", $dProduct->data);
+            }
         } else {
             response(400);
         }
