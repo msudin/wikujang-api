@@ -18,6 +18,7 @@ function createWarung($body) {
                 `open_time`,
                 `closed_time`,
                 `rating`,
+                `views`,
                 `image_id`,
                 `address_id`,
                 `latitude`,
@@ -35,6 +36,7 @@ function createWarung($body) {
                     '$body->openTime',
                     '$body->closedTime',
                     $body->rating,
+                    $body->views,
                     '$body->imageId',
                     '$result->data',
                     '$body->latitude',
@@ -131,6 +133,7 @@ function getWarungById($id = NULL) {
             $data->openTime = $row['open_time'];
             $data->closedTime = $row['closed_time'];
             $data->rating = $row['rating'];
+            $data->views = (int)$row['views'];
             $data->imageId = $row['image_id'];
             $data->imageUrl = "";
             if (!empty($data->imageId)) {
@@ -171,15 +174,70 @@ function updateWarung($bodyRequest, $warungId) {
 
         $sql = "UPDATE warung SET `updated_at` = '$updatedAt'";
         
-        /// [NAME]
-        $name = $bodyRequest['name'];
-        $sql = $sql.", `name` = '$name'";
+        if (!empty($bodyRequest['name'])) {
+            $name = $bodyRequest['name'];
+            $sql = $sql.", `name` = '$name'";
+        }
 
-        /// [USERNAME]
-        $userName = $bodyRequest['userName'];
-        $sql = $sql.", `username` = '$userName'";
+        if (!empty($bodyRequest['description'])) { 
+            $description = $bodyRequest['description'];
+            $sql = $sql.", `description` = '$description'";
+        }
 
-        // [ADDRESS ID]
+        if (!empty($bodyRequest['openTime'])) { 
+            $openTime = $bodyRequest['openTime'];
+            $sql = $sql.", `open_time` = '$openTime'";
+        }
+
+        if (!empty($bodyRequest['closedTime'])) { 
+            $closedTime = $bodyRequest['closedTime'];
+            $sql = $sql.", `closed_time` = '$closedTime'";
+        }
+
+        if (!empty($bodyRequest['longitude'])) {
+            $longitude = $bodyRequest['longitude'];
+            $sql = $sql.", `longitude` = '$longitude'";
+        }
+
+        if (!empty($bodyRequest['latitude'])) {
+            $latitude = $bodyRequest['latitude'];
+            $sql = $sql.", `latitude` = '$latitude'";
+        }
+
+        if (!empty($bodyRequest['views'])) {
+            $views = $bodyRequest['views'];
+            $sql = $sql.", `views` = $views";
+        }
+
+        if (!empty($bodyRequest['rating'])) {
+            $rating = $bodyRequest['rating'];
+            $sql = $sql.", `rating` = $rating";
+        }
+
+        if (!empty($bodyRequest['imageId'])) {
+            $imageId = $bodyRequest['imageId'];
+            $sql = $sql.", `image_id` = '$imageId'";
+        }
+
+        if (!empty($bodyRequest['subDistrictId'])) {
+            $subDistrictId = $bodyRequest['subDistrictId']; 
+            $districtId = $bodyRequest['districtId']; 
+            $addressDetail = $bodyRequest['address']; 
+            if (!empty($addressId)) {
+                $resultAddress = updateAddress($addressId, $subDistrictId, $districtId, $addressDetail);
+                if ($resultAddress->success == false) {
+                    return false;
+                }
+             } else {
+                 $resultAddress = createAddress($subDistrictId, $districtId, $addressDetail);
+                 if ($resultAddress->success == true) {
+                     $addressId = $resultAddress->data;  
+                 } else {
+                     return false;
+                 }    
+             }
+        } 
+
         if (!empty($addressId)) {
             $sql = $sql.", `address_id` = '$addressId'";
         }
@@ -193,5 +251,4 @@ function updateWarung($bodyRequest, $warungId) {
         return false;
     }
 }
-
 ?>

@@ -21,6 +21,7 @@ try {
                     $bodyRequest->openTime = $data['openTime'] ?? '07.00';
                     $bodyRequest->closedTime = $data['closedTime'] ?? '22.00';
                     $bodyRequest->rating = $data['rating'] ?? 0;
+                    $bodyRequest->views = $data['views'] ?? 0;
                     $bodyRequest->imageId = $data['imageId'] ?? "";
 
                     $bodyRequest->subDistrictId = $data['subDistrictId'] ?? 0;

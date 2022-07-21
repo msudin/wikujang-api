@@ -282,6 +282,7 @@ function getAllUser() {
             $data->userName = $row["username"];
             $data->password = $row["password"];
             $data->email = $row["email"];
+            $data->role = $row["role"];
             $data->createdAt = $row["created_at"];
             $data->updatedAt = $row["updated_at"];
             $data->deletedAt = $row["deleted_at"];

@@ -12,27 +12,9 @@ try {
             if (!empty($dToken)) {
                 $resultWarung = getWarungById($dToken->userId);
                 if ($resultWarung->success == true) {
-                    
-                    // $bodyRequest = new stdClass();
-                    // $bodyRequest->warungId = $resultWarung->data->id ;
-                    // $bodyRequest->name = $data['name'] ?? "";
-                    // $bodyRequest->userName = $data['userName'] ?? "";
-                    // $bodyRequest->description = $data['description'] ?? "";
-                    // $bodyRequest->isOpen = $data['isOpen'] ?? 'true';
-                    // $bodyRequest->openTime = $data['openTime'] ?? '07.00';
-                    // $bodyRequest->closedTime = $data['closedTime'] ?? '22.00';
-                    // $bodyRequest->rating = $data['rating'] ?? 0;
-                    // $bodyRequest->imageId = $data['imageId'] ?? "";
-
-                    // $bodyRequest->subDistrictId = $data['subDistrictId'] ?? 0;
-                    // $bodyRequest->districtId = $data['districtId'] ?? 0;
-                    // $bodyRequest->address = $data['address'] ?? "";
-                    // $bodyRequest->latitude = $data['latitude'] ?? "";
-                    // $bodyRequest->longitude = $data['longitude'] ?? "";
-                    
                     $isSuccess = updateWarung($entityData, $resultWarung->data->id);
                     if ($isSuccess) {
-                        response(200, "Berhasil update profil");
+                        response(200, "Berhasil update warung");
                     }
                 } else {
                     response(400);
