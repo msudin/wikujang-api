@@ -51,7 +51,7 @@ function createWarung($body) {
         return false;
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "create warung exception -> $error");
+        response(500, "$error");
         return false;
     }
 }

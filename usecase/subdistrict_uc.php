@@ -24,7 +24,7 @@ function createSubdistrict($bodyRequest) {
         return true;
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "create subdistrict exception -> $error");
+        response(500, "$error");
         return false;
     }
 }

@@ -22,7 +22,7 @@ function createDistrict($bodyRequest) {
         return true;
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "create district exception -> $error");
+        response(500, "$error");
         return false;
     }
 }

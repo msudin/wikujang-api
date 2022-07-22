@@ -93,7 +93,7 @@ function validateToken($accessToken) {
         }
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "Validate token exception : $error");
+        response(500, "$error");
         return NULL;
     }
 }

@@ -23,7 +23,7 @@ function registerCheckUserExist($phone, $password) {
         }
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "user exist exception -> $error");
+        response(500, "$error");
         return true;
     }    
 }
@@ -50,7 +50,7 @@ function registerCheckAdminExist($email, $username) {
         }
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "admin exist exception -> $error");
+        response(500, "$error");
         return true;
     }    
 }

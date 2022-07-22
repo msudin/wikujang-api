@@ -34,7 +34,7 @@ function validateWarungExist($userId, $username) {
         }
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "Validate username warung -> $error");
+        response(500, "$error");
         return true;
     }
 }

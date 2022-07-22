@@ -36,7 +36,7 @@ function createUserRegister($bodyRequest) {
         return true;
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "create user exception -> $error");
+        response(500, "$error");
         return false;
     }
 }
@@ -59,7 +59,7 @@ function getUserByPhone($phone) {
                 return $data;
             }
         } else {
-            response(404, "phone number not registered");
+            response(404, "No Hp belum terdaftar");
             return NULL;
         }
     } catch (Exception $e) {
@@ -133,7 +133,7 @@ function updateUserPhotoProfile($bodyRequest) {
         return true;
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "create user exception -> $error");
+        response(500, "$error");
         return false;
     }
 }
@@ -150,7 +150,7 @@ function updateUserRole($bodyRequest) {
         return true;
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "user exception -> $error");
+        response(500, "$error");
         return false;
     }
 }
