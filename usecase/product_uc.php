@@ -71,7 +71,7 @@ function getAllProduct($limit = 0) {
             $data->price = (int) $row['price'];
             $data->rating = $row['rating'];
             $data->likes = (int) $row['likes'];
-            $data->views = (int) $row['rating'];
+            $data->views = (int) $row['views'];
             $data->rating = $row['rating'];
             $data->imageId = $row['image_id'];
             $data->imageUrl = "";
@@ -105,8 +105,7 @@ function getProductMe($warungId) {
         $sql = "SELECT f.*, p.*
         FROM `file` f
         RIGHT JOIN `product` p ON f.file_id = p.image_id
-        WHERE warung_id = '$warungId'
-        ";
+        WHERE warung_id = '$warungId'";
 
         if (!empty($limit)) {
             $sql = $sql." LIMIT $limit";
@@ -123,7 +122,7 @@ function getProductMe($warungId) {
             $data->price = (int) $row['price'];
             $data->rating = $row['rating'];
             $data->likes = (int) $row['likes'];
-            $data->views = (int) $row['rating'];
+            $data->views = (int) $row['views'];
             $data->rating = $row['rating'];
             $data->imageId = $row['image_id'];
             $data->imageUrl = "";
@@ -149,7 +148,31 @@ function getProductMe($warungId) {
     }
 }
 
+function updateViews($productId) {
+    try {
+        clearstatcache();
+        $conn = callDb();
+        $updatedAt = currentTime();
+
+        $sqlSelectViews = "SELECT `views` FROM product WHERE `product_id` = '$productId'";
+        $result = $conn->query($sqlSelectViews);
+        while($row = $result->fetch_assoc()) { 
+            $currentViews = (int) $row['views'];
+            $newViews = $currentViews + 1;
+            $sql = "UPDATE `product` SET 
+                `updated_at` = '$updatedAt',
+                `views` = $newViews 
+            WHERE `product_id`= '$productId'";
+            $conn->query($sql);
+        }
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        response(500, $error);
+    }
+}
+
 function getProductById($productId) {
+    updateViews($productId);
     try {
         $conn = callDb();
         $data = new stdClass();
@@ -169,7 +192,7 @@ function getProductById($productId) {
             $data->price = (int) $row['price'];
             $data->rating = $row['rating'];
             $data->likes = (int) $row['likes'];
-            $data->views = (int) $row['rating'];
+            $data->views = (int) $row['views'];
             $data->rating = $row['rating'];
             $data->imageId = $row['image_id'];
             $data->imageUrl = "";
@@ -198,5 +221,4 @@ function getProductById($productId) {
         return $resultData;
     }
 }
-
 ?>
