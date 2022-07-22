@@ -9,11 +9,16 @@ try {
             $bodyRequest = new stdClass();
             $bodyRequest->fullName = $data['fullName'] ?? NULL;
             $bodyRequest->userName = $data['userName'] ?? NULL;
-            $bodyRequest->phone = $data['phone'] ?? NULL;
+            
+            // $bodyRequest->phone = $data['phone'] ?? NULL;
+            $phone = $data['phone'] ?? NULL ;
+            $bodyRequest->phone = preg_replace('/0/', '+62', $phone, 1);
+
             $bodyRequest->password = $data['password'] ?? NULL;
             $bodyRequest->email = $data['email'] ?? NULL;
             $bodyRequest->birthdate = $data['birthdate'] ?? "2022-02-27";
             $bodyRequest->gender = $data["gender"] ?? "Laki-laki";
+
             if (!(registerCheckUserExist($bodyRequest->phone, $bodyRequest->password))) {
                $isSuccessCreateUser = createUserRegister($bodyRequest);
                if($isSuccessCreateUser) {
