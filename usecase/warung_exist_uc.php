@@ -8,12 +8,18 @@ function validateWarungExist($userId, $username) {
             return true;
         } else {
             $conn = callDb();
-            $sql = "SELECT COUNT(warung_id) AS TotalWarung FROM warung WHERE `user_id`=$userId";
+            $sql = "SELECT COUNT(warung_id) AS TotalWarung 
+                FROM warung WHERE `user_id`=$userId 
+                AND deleted_at=''";
+
             $resultSql = $conn->query($sql);
             while($rowData = $resultSql->fetch_assoc()) {
                 $totalData = (int) $rowData['TotalWarung'];
                 if ($totalData == 0) {
-                    $sqlWarung = "SELECT COUNT(warung_id) AS TotalWarung FROM warung WHERE `username`='$username'";
+                    $sqlWarung = "SELECT COUNT(warung_id) AS TotalWarung FROM warung 
+                        WHERE `username`='$username' 
+                        AND deleted_at=''";
+
                     $result = $conn->query($sqlWarung);
                     while($row = $result->fetch_assoc()) {
                         $total = (int) $row['TotalWarung'];

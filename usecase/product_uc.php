@@ -52,9 +52,11 @@ function getAllProduct($limit = 0) {
         $conn = callDb();
         $array = array();
 
-        $sql = "SELECT f.*, p.*
-        FROM `file` f
-        RIGHT JOIN `product` p ON f.file_id = p.image_id";
+        $sql = "SELECT f.*, w.deleted_at, w.warung_id, p.* 
+        FROM `product` p 
+        LEFT JOIN `file` f ON p.image_id = f.file_id 
+        LEFT JOIN `warung` w ON p.warung_id = w.warung_id 
+        WHERE w.deleted_at='' AND p.deleted_at = ''";
 
         if (!empty($limit)) {
             $sql = $sql." LIMIT $limit";

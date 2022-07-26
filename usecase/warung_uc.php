@@ -63,7 +63,8 @@ function getAllWarung() {
 
         $sql = "SELECT f.*, w.*
         FROM `file` f
-        RIGHT JOIN `warung` w ON f.file_id = w.image_id";
+        RIGHT JOIN `warung` w ON f.file_id = w.image_id WHERE w.deleted_at=''";
+        
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) {
             $data = new stdClass();
@@ -114,7 +115,7 @@ function getWarungByUserId($id = NULL) {
 
         $sql = "SELECT f.*, w.*
         FROM `file` f
-        RIGHT JOIN `warung` w ON f.file_id = w.image_id WHERE w.user_id=$id";
+        RIGHT JOIN `warung` w ON f.file_id = w.image_id WHERE w.user_id=$id AND w.deleted_at=''";
         $result = $conn->query($sql);
         
         while($row = $result->fetch_assoc()) {
@@ -125,7 +126,6 @@ function getWarungByUserId($id = NULL) {
                 $data->phone = $dProfile->phone;
             }
             $data->name = $row['name'];
-            // $data->username = $row['username'];
             $data->description = $row['description'];
             $data->isOpen = filter_var($row['is_open'], FILTER_VALIDATE_BOOLEAN);
             $data->openTime = $row['open_time'];
@@ -288,6 +288,12 @@ function updateWarung($bodyRequest, $warungId) {
 
         if (!empty($addressId)) {
             $sql = $sql.", `address_id` = '$addressId'";
+        }
+
+
+        /// QUERY DELETE WARUNG
+        if (!empty($bodyRequest['deleted']) && $bodyRequest['deleted'] == true) {
+            $sql = $sql.", `deleted_at` = '$updatedAt'";
         }
 
         $sql = $sql." WHERE `warung_id`= '$warungId'";

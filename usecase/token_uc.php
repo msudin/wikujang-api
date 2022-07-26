@@ -33,7 +33,7 @@ function createToken($userid) {
         return $data;
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "Create token exception -> $error");
+        response(500, "$error");
         return NULL;
     }
 }
@@ -58,7 +58,7 @@ function getTokenById($userId) {
         }
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "Validate session exception : $error");
+        response(500, "$error");
         return NULL;
     }
 }
