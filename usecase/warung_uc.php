@@ -296,6 +296,11 @@ function updateWarung($bodyRequest, $warungId) {
             $sql = $sql.", `deleted_at` = '$updatedAt'";
         }
 
+        /// QUERY RE-ACTIVATE WARUNG
+        if (!empty($bodyRequest['activated']) && $bodyRequest['activated'] == true ) {
+            $sql = $sql.", `deleted_at` = ''";
+        }
+
         $sql = $sql." WHERE `warung_id`= '$warungId'";
         $conn->query($sql);
         return true;
