@@ -5,16 +5,20 @@ function createCategory($bodyRequest) {
     try {
         $conn = callDb();
         $currentDate = currentTime();
+        $id = uniqid();
+
         $sql = "INSERT INTO `category` (
+            `category_id`,
             `category_name`,
             `created_at`,
             `updated_at`,
             `deleted_at`
             ) VALUES (
-                 '$bodyRequest->categoryName',
-                 '$currentDate', 
-                 '$currentDate', 
-                 ''
+                '$id',
+                '$bodyRequest->categoryName',
+                '$currentDate', 
+                '$currentDate', 
+                ''
             )";
         $conn->query($sql);
         return true;
@@ -66,7 +70,7 @@ function getAllCategory() {
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) { 
             $data = new stdClass();
-            $data->id = (int) $row['warung_id'];
+            $data->id = $row['category_id'];
             $data->name = $row['category_name'];
             array_push($array, $data);
         }
