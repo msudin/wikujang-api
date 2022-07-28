@@ -3,16 +3,16 @@ include_once('../helper/import.php');
 
 try {
     clearstatcache();
-    if (requestMethod() == "POST") {
+    if (requestMethod() == "PUT") {
         $entityBody = file_get_contents('php://input');
         $entityData = json_decode($entityBody, true);
         if (!empty($entityBody)) {
             $headerToken = headerToken();
             $dToken = validateToken($headerToken);
             if (!empty($dToken)) {
-                $isSuccess = updateWarung($entityData, $resultWarung->data->id);
+                $isSuccess = updateProduct($entityData);
                 if ($isSuccess) {
-                    response(200, "Berhasil update warung");
+                    response(200, "Berhasil update menu");
                 }
             }
         } else {

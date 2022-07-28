@@ -223,4 +223,68 @@ function getProductById($productId) {
         return $resultData;
     }
 }
+
+function deleteProduct($bodyRequest) {
+    try {
+        $conn = callDb();
+        $currentDate = currentTime();
+
+        $sql = "UPDATE `product` SET `deleted_at` = '$currentDate' WHERE `product_id` = '$bodyRequest->id'";
+        $conn->query($sql);
+        return true;
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        response(500, $error);
+        return false;
+    }
+}
+
+function updateProduct($bodyRequest) {
+    try {
+        clearstatcache();
+        $conn = callDb();
+        $updatedAt = currentTime();
+
+        $sql = "UPDATE `product` SET `updated_at` = '$updatedAt'";
+        
+        if (!empty($bodyRequest['name'])) {
+            $name = $bodyRequest['name'];
+            $sql = $sql.", `name` = '$name'";
+        }
+
+        if (!empty($bodyRequest['description'])) { 
+            $description = $bodyRequest['description'];
+            $sql = $sql.", `description` = '$description'";
+        }
+
+        if (!empty($bodyRequest['category'])) { 
+            $category = $bodyRequest['category'];
+            $sql = $sql.", `category` = '$category'";
+        }
+
+        if (!empty($bodyRequest['price'])) { 
+            $price = $bodyRequest['price'];
+            $sql = $sql.", `price` = $price";
+        }
+
+        if (!empty($bodyRequest['imageId'])) {
+            $imageId = $bodyRequest['imageId'];
+            $sql = $sql.", `image_id` = '$imageId'";
+        }
+
+        /// QUERY RE-ACTIVATE Product
+        if (!empty($bodyRequest['activated']) && $bodyRequest['activated'] == true ) {
+            $sql = $sql.", `deleted_at` = ''";
+        }
+
+        $productId = $bodyRequest['productId'];
+        $sql = $sql." WHERE `product_id`= '$productId'";
+        $conn->query($sql);
+        return true;
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        response(500, $error);
+        return false;
+    }
+}
 ?>

@@ -3,7 +3,7 @@ include_once('../helper/import.php');
 
 try {
     clearstatcache();
-    if (requestMethod() == "POST") {
+    if (requestMethod() == "PUT") {
         $entityBody = file_get_contents('php://input');
         $entityData = json_decode($entityBody, true);
         if (!empty($entityBody)) {
