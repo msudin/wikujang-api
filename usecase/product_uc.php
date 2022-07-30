@@ -10,7 +10,7 @@ function createProduct($body) {
             `warung_id`,
             `name`,
             `description`,
-            `category`,
+            `category_id`,
             `price`,
             `image_Id`,
             `rating`,
@@ -26,7 +26,7 @@ function createProduct($body) {
                 '$body->warungId',
                 '$body->name',
                 '$body->description',
-                '$body->category',
+                '$body->categoryId',
                 $body->price,
                 '$body->imageId',
                 0,
@@ -52,11 +52,12 @@ function getAllProduct($limit = 0) {
         $conn = callDb();
         $array = array();
 
-        $sql = "SELECT f.*, w.deleted_at, w.warung_id, p.* 
+        $sql = "SELECT f.file_name, c.category_name, p.* 
         FROM `product` p 
         LEFT JOIN `file` f ON p.image_id = f.file_id 
+        LEFT JOIN `category` c ON p.category_id = c.category_id
         LEFT JOIN `warung` w ON p.warung_id = w.warung_id 
-        WHERE w.deleted_at='' AND p.deleted_at = ''";
+        WHERE w.deleted_at = '' AND p.deleted_at = ''";
 
         if (!empty($limit)) {
             $sql = $sql." LIMIT $limit";
@@ -69,7 +70,6 @@ function getAllProduct($limit = 0) {
             $data->warungId = $row['warung_id'];
             $data->name = $row['name'];
             $data->description = $row['description'];
-            $data->category = $row['category'];
             $data->price = (int) $row['price'];
             $data->rating = $row['rating'];
             $data->likes = (int) $row['likes'];
@@ -81,6 +81,13 @@ function getAllProduct($limit = 0) {
                 if (isset($row["file_name"])) {
                     $data->imageUrl = urlPathImage()."".$row["file_name"];
                 }
+            }
+            $data->category = null;
+            if (!empty($row['category_name'])) {
+                $category = new stdClass();
+                $category->id = $row['category_id'];
+                $category->name = $row['category_name'];
+                $data->category = $category;
             }
             array_push($array, $data);
         }
@@ -104,9 +111,10 @@ function getProductMe($warungId) {
         $conn = callDb();
         $array = array();
 
-        $sql = "SELECT f.*, p.*
-        FROM `file` f
-        RIGHT JOIN `product` p ON f.file_id = p.image_id
+        $sql = "SELECT f.file_name, c.category_name, p.*
+        FROM `product` p 
+        LEFT JOIN `file` f ON p.image_id = f.file_id
+        LEFT JOIN `category` c ON p.category_id = c.category_id
         WHERE warung_id = '$warungId'";
 
         if (!empty($limit)) {
@@ -120,7 +128,6 @@ function getProductMe($warungId) {
             $data->warungId = $row['warung_id'];
             $data->name = $row['name'];
             $data->description = $row['description'];
-            $data->category = $row['category'];
             $data->price = (int) $row['price'];
             $data->rating = $row['rating'];
             $data->likes = (int) $row['likes'];
@@ -133,6 +140,13 @@ function getProductMe($warungId) {
                     $data->imageUrl = urlPathImage()."".$row["file_name"];
                 }
             }
+            $data->category = null; 
+            if (!empty($row['category_name'])) {
+                $category = new stdClass();
+                $category->id = $row['category_id'];
+                $category->name = $row['category_name'];
+                $data->category = $category;
+            }
             array_push($array, $data);
         }
         $resultData = new stdClass();
@@ -141,8 +155,7 @@ function getProductMe($warungId) {
         return $resultData;
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "$error");
-
+        response(500, $error);
         $resultData = new stdClass();
         $resultData->success = false;
         $resultData->data = NULL;
@@ -179,9 +192,10 @@ function getProductById($productId) {
         $conn = callDb();
         $data = new stdClass();
 
-        $sql = "SELECT f.*, p.*
-        FROM `file` f
-        RIGHT JOIN `product` p ON f.file_id = p.image_id
+        $sql = "SELECT f.file_name, c.category_name, p.*
+        FROM `product` p
+        LEFT JOIN `file` f ON p.image_id = f.file_id
+        LEFT JOIN `category` c ON p.category_id = c.category_id
         WHERE product_id = '$productId'";
 
         $result = $conn->query($sql);
@@ -190,7 +204,6 @@ function getProductById($productId) {
             $data->warungId = $row['warung_id'];
             $data->name = $row['name'];
             $data->description = $row['description'];
-            $data->category = $row['category'];
             $data->price = (int) $row['price'];
             $data->rating = $row['rating'];
             $data->likes = (int) $row['likes'];
@@ -203,7 +216,14 @@ function getProductById($productId) {
                     $data->imageUrl = urlPathImage()."".$row["file_name"];
                 }
             }
-
+            $data->category = null;
+            if (!empty($row['category_name'])) {
+                $category = new stdClass();
+                $category->id = $row['category_id'];
+                $category->name = $row['category_name'];
+                $data->category = $category;
+            }
+            $data->warung = null;
             $dWarung = getWarungById($data->warungId);
             if ($dWarung->success) {
                 $data->warung = $dWarung->data;
@@ -257,9 +277,9 @@ function updateProduct($bodyRequest) {
             $sql = $sql.", `description` = '$description'";
         }
 
-        if (!empty($bodyRequest['category'])) { 
-            $category = $bodyRequest['category'];
-            $sql = $sql.", `category` = '$category'";
+        if (!empty($bodyRequest['categoryId'])) { 
+            $category = $bodyRequest['categoryId'];
+            $sql = $sql.", `category_id` = '$category'";
         }
 
         if (!empty($bodyRequest['price'])) { 

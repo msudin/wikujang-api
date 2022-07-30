@@ -16,7 +16,7 @@ try {
                     $bodyRequest->warungId = $dToken->warungId ?? "";
                     $bodyRequest->name = $data['name'] ?? "";
                     $bodyRequest->description = $data['description'] ?? "";
-                    $bodyRequest->category = $data['category'] ?? "";
+                    $bodyRequest->categoryId = $data['categoryId'] ?? "";
                     $bodyRequest->price = (Int) $data['price'] ?? 0;
                     $bodyRequest->imageId = $data['imageId'] ?? "";
 

@@ -61,9 +61,9 @@ function getAllWarung() {
         $conn = callDb();
         $array = array();
 
-        $sql = "SELECT f.*, w.*
-        FROM `file` f
-        RIGHT JOIN `warung` w ON f.file_id = w.image_id WHERE w.deleted_at=''";
+        $sql = "SELECT f.file_name, w.*
+        FROM `warung` w
+        LEFT JOIN `file` f ON w.image_id = f.file_id WHERE w.deleted_at=''";
         
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) {
@@ -71,7 +71,6 @@ function getAllWarung() {
             $data->id = $row['warung_id'];
             $data->userId = (int)$row['user_id'];
             $data->name = $row['name'];
-            // $data->username = $row['username'];
             $data->description = $row['description'];
             $data->isOpen = filter_var($row['is_open'], FILTER_VALIDATE_BOOLEAN);
             $data->openTime = $row['open_time'];
@@ -113,9 +112,10 @@ function getWarungByUserId($id = NULL) {
         $result = new stdClass();
         $temp = new stdClass();
 
-        $sql = "SELECT f.*, w.*
-        FROM `file` f
-        RIGHT JOIN `warung` w ON f.file_id = w.image_id WHERE w.user_id=$id AND w.deleted_at=''";
+        $sql = "SELECT f.file_name, w.*
+        FROM `warung` w
+        LEFT JOIN `file` f ON w.image_id = f.file_id 
+        WHERE w.user_id = $id AND w.deleted_at = ''";
         $result = $conn->query($sql);
         
         while($row = $result->fetch_assoc()) {
@@ -165,9 +165,9 @@ function getWarungById($id) {
         $result = new stdClass();
         $temp = new stdClass();
 
-        $sql = "SELECT f.*, w.*
-        FROM `file` f
-        RIGHT JOIN `warung` w ON f.file_id = w.image_id WHERE warung_id='$id'";
+        $sql = "SELECT f.file_name, w.*
+        FROM `warung` w
+        LEFT JOIN `file` f ON w.image_id = f.file_id WHERE warung_id = '$id'";
         $result = $conn->query($sql);
         
         while($row = $result->fetch_assoc()) {
@@ -178,7 +178,6 @@ function getWarungById($id) {
                 $data->phone = $dProfile->phone;
             }
             $data->name = $row['name'];
-            // $data->username = $row['username'];
             $data->description = $row['description'];
             $data->isOpen = filter_var($row['is_open'], FILTER_VALIDATE_BOOLEAN);
             $data->openTime = $row['open_time'];

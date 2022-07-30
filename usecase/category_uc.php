@@ -7,21 +7,24 @@ function createCategory($bodyRequest) {
         $currentDate = currentTime();
         $id = uniqid();
 
-        $sql = "INSERT INTO `category` (
-            `category_id`,
-            `category_name`,
-            `created_at`,
-            `updated_at`,
-            `deleted_at`
-            ) VALUES (
-                '$id',
-                '$bodyRequest->categoryName',
-                '$currentDate', 
-                '$currentDate', 
-                ''
-            )";
-        $conn->query($sql);
-        return true;
+        $isNotExist = checkCategoryExistByName($bodyRequest->categoryName);
+        if ($isNotExist) {
+            $sql = "INSERT INTO `category` (
+                `category_id`,
+                `category_name`,
+                `created_at`,
+                `updated_at`,
+                `deleted_at`
+                ) VALUES (
+                    '$id',
+                    '$bodyRequest->categoryName',
+                    '$currentDate', 
+                    '$currentDate', 
+                    ''
+                )";
+            $conn->query($sql);
+            return true;
+        }
     } catch (Exception $e) {
         $error = $e->getMessage();
         response(500, $error);

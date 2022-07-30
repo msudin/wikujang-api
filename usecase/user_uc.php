@@ -74,7 +74,8 @@ function getUserById($userId) {
         $connn = callDb();
         $server_url = urlPathImage();
 
-        $sql = "SELECT f.file_id, f.type, f.file_name, ad.address_id, ad.subdistrict_id, ad.district_id, ad.address_detail, u.* FROM `user` u 
+        $sql = "SELECT f.file_name, f.type, ad.address_id, ad.subdistrict_id, ad.district_id, ad.address_detail, u.* 
+        FROM `user` u 
         LEFT JOIN `file` f ON u.image_id = f.file_id 
         LEFT JOIN `address` ad ON u.address_id = ad.address_id 
         WHERE u.user_id=$userId";
@@ -91,9 +92,9 @@ function getUserById($userId) {
                 $data->birthdate = $row['birthdate'];
                 $data->gender = $row['gender'];
                 $data->profileImage = NULL;
-                if (!empty($row["file_id"])) {
+                if (!empty($row["image_id"])) {
                     $photo = new stdClass();
-                    $photo->id = $row["file_id"];
+                    $photo->id = $row["image_id"];
                     $photo->fileUrl = urlPathImage()."".$row['file_name'];
                     $photo->fileName = $row['file_name'];
                     $data->profileImage = $photo;
@@ -165,6 +166,29 @@ function updatePassword($userId, $password) {
         WHERE `user_id`= $userId";
         $conn->query($sql);
         return true;
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        response(500, $error);
+        return false;
+    }
+}
+
+function forgotPassword($bodyRequest) {
+    try {
+        $conn = callDb();
+        $updatedAt = currentTime();
+        $password = $bodyRequest['newPassword'];
+        $phone = $bodyRequest['phone'];
+
+        $isSuccess = checkUserExistByPhone($phone);
+        if ($isSuccess) {
+            $sql = "UPDATE user SET
+                `password`= '$password',
+                `updated_at` = '$updatedAt'
+                WHERE `phone`= '$phone'";
+            $conn->query($sql);
+            return true;
+        }
     } catch (Exception $e) {
         $error = $e->getMessage();
         response(500, $error);
