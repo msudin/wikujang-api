@@ -47,7 +47,14 @@ function createProduct($body) {
     }
 }
 
-function getProductAll($limit = 0, $warungId = NULL) {
+function getProductAll(
+        $limit = 0,
+        $warungId = NULL, 
+        $name = NULL, 
+        $minPrice = 0,
+        $maxPrice = 1000000000,
+        $categoryId = NULL
+    ) {
     try {
         $conn = callDb();
         $array = array();
@@ -58,6 +65,16 @@ function getProductAll($limit = 0, $warungId = NULL) {
         LEFT JOIN `category` c ON p.category_id = c.category_id
         LEFT JOIN `warung` w ON p.warung_id = w.warung_id 
         WHERE w.deleted_at = '' AND p.deleted_at = ''";
+
+        if (!empty($name)) {
+            $sql = $sql." AND p.name LIKE '%$name%'";   
+        }
+
+        if (!empty($categoryId)) {
+            $sql = $sql." AND p.category_id = '$categoryId'";   
+        }
+
+        $sql = $sql." AND p.price BETWEEN $minPrice AND $maxPrice";
 
         if (!empty($warungId)) {
             $sql = $sql." AND p.warung_id = '$warungId'";
@@ -95,18 +112,11 @@ function getProductAll($limit = 0, $warungId = NULL) {
             }
             array_push($array, $data);
         }
-        $resultData = new stdClass();
-        $resultData->success = true;
-        $resultData->data = $array;
-        return $resultData;
+        return resultBody(true, $array);
     } catch (Exception $e) {
         $error = $e->getMessage();
-        response(500, "$error");
-
-        $resultData = new stdClass();
-        $resultData->success = false;
-        $resultData->data = NULL;
-        return $resultData;
+        response(500, $error);
+        return resultBody();
     }
 }
 
@@ -153,17 +163,11 @@ function getProductMe($warungId) {
             }
             array_push($array, $data);
         }
-        $resultData = new stdClass();
-        $resultData->success = true;
-        $resultData->data = $array;
-        return $resultData;
+        return resultBody(true, $array);
     } catch (Exception $e) {
         $error = $e->getMessage();
         response(500, $error);
-        $resultData = new stdClass();
-        $resultData->success = false;
-        $resultData->data = NULL;
-        return $resultData;
+        return resultBody();
     }
 }
 
@@ -233,18 +237,11 @@ function getProductById($productId) {
                 $data->warung = $dWarung->data;
             }
         }
-        $resultData = new stdClass();
-        $resultData->success = true;
-        $resultData->data = $data;
-        return $resultData;
+        return resultBody(true, $data);
     } catch (Exception $e) {
         $error = $e->getMessage();
         response(500, $error);
-
-        $resultData = new stdClass();
-        $resultData->success = false;
-        $resultData->data = NULL;
-        return $resultData;
+        return resultBody();
     }
 }
 
