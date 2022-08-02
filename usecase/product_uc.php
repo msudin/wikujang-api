@@ -53,7 +53,10 @@ function getProductAll(
         $name = NULL, 
         $minPrice = 0,
         $maxPrice = 1000000000,
-        $categoryId = NULL
+        $categoryId = NULL, 
+        $views = NULL,
+        $price = NULL, 
+        $rating = NULL
     ) {
     try {
         $conn = callDb();
@@ -78,6 +81,50 @@ function getProductAll(
 
         if (!empty($warungId)) {
             $sql = $sql." AND p.warung_id = '$warungId'";
+        }
+
+        $isFilterByViews = false;
+        if (!empty($views)) {
+            $isFilterByViews = true;
+            if ($views == "desc") {
+                $sql = $sql." ORDER BY p.views DESC";   
+            } else {
+                $sql = $sql." ORDER BY p.views ASC";   
+            }
+        }
+
+        $isFilterByPrice = false;
+        if (!empty($price)) {
+            $isFilterByPrice = true;
+            if ($isFilterByViews) {
+                if ($price == "desc") {
+                    $sql = $sql.", p.price DESC";   
+                } else {
+                    $sql = $sql.", p.price ASC";   
+                }
+            } else {
+                if ($price == "desc") {
+                    $sql = $sql." ORDER BY p.price DESC";   
+                } else {
+                    $sql = $sql." ORDER BY p.price ASC";   
+                }
+            }
+        }
+
+        if (!empty($rating)) {
+            if ($isFilterByViews || $isFilterByPrice) {
+                if ($rating == "desc") {
+                    $sql = $sql.", p.rating DESC";   
+                } else {
+                    $sql = $sql.", p.rating ASC";   
+                }
+            } else {
+                if ($rating == "desc") {
+                    $sql = $sql." ORDER BY p.rating DESC";   
+                } else {
+                    $sql = $sql." ORDER BY p.rating ASC";   
+                }
+            }
         }
 
         if (!empty($limit)) {
@@ -291,6 +338,11 @@ function updateProduct($bodyRequest) {
         if (!empty($bodyRequest['imageId'])) {
             $imageId = $bodyRequest['imageId'];
             $sql = $sql.", `image_id` = '$imageId'";
+        }
+
+        if (!empty($bodyRequest['rating'])) {
+            $rating = $bodyRequest['rating'];
+            $sql = $sql.", `rating` = '$rating'";
         }
 
         /// QUERY RE-ACTIVATE Product

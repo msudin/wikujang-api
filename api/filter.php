@@ -11,6 +11,9 @@ try {
         $minPrice = $_GET['minPrice'] ?? 0;
         $maxPrice = $_GET['maxPrice'] ?? 1000000000;
         $categoryId = $_GET['categoryId'] ?? NULL;
+        $views = $_GET['views'] ?? NULL; // asc, desc
+        $price = $_GET['price'] ?? NULL; // asc, desc
+        $rating = $_GET['rating'] ?? NULL; // asc, desc
         
         // FILTER FUNCTION
         $dProduct = getProductAll(
@@ -19,7 +22,10 @@ try {
             $name, 
             $minPrice, 
             $maxPrice, 
-            $categoryId
+            $categoryId,
+            $views, 
+            $price,
+            $rating
         );
 
         if ($dProduct->success) {
