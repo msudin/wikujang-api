@@ -112,45 +112,50 @@ function getWarungByUserId($id = NULL) {
         $result = new stdClass();
         $temp = new stdClass();
 
-        $sql = "SELECT f.file_name, w.*
-        FROM `warung` w
-        LEFT JOIN `file` f ON w.image_id = f.file_id 
-        WHERE w.user_id = $id AND w.deleted_at = ''";
-        $result = $conn->query($sql);
-        
-        while($row = $result->fetch_assoc()) {
-            $data->id = $row['warung_id'];
-            $data->userId = (int)$row['user_id'];
-            if (!empty($data->userId)) {
-                $dProfile = getUserPhoneById($data->userId);
-                $data->phone = $dProfile->phone;
-            }
-            $data->name = $row['name'];
-            $data->description = $row['description'];
-            $data->isOpen = filter_var($row['is_open'], FILTER_VALIDATE_BOOLEAN);
-            $data->openTime = $row['open_time'];
-            $data->closedTime = $row['closed_time'];
-            $data->rating = $row['rating'];
-            $data->views = (int)$row['views'];
-            $data->imageId = $row['image_id'];
-            $data->imageUrl = "";
-            if (!empty($data->imageId)) {
-                $data->imageUrl = urlPathImage()."".$row["file_name"];
-            }
-            $data->address = null;
-            $temp->addressId = $row['address_id'];
-            if (!empty($temp->addressId)) {
-                $resultAddress = getAddressDetail($temp->addressId);
-                if ($resultAddress->success = true) {
-                    $data->address = $resultAddress->data;
-                } else {
-                    return;
-                }   
+        if (!empty($id)) {
+            $sql = "SELECT f.file_name, w.*
+            FROM `warung` w
+            LEFT JOIN `file` f ON w.image_id = f.file_id 
+            WHERE w.user_id = $id AND w.deleted_at = ''";
+            $result = $conn->query($sql);
+
+            while($row = $result->fetch_assoc()) {
+                $data->id = $row['warung_id'];
+                $data->userId = (int)$row['user_id'];
+                if (!empty($data->userId)) {
+                    $dProfile = getUserPhoneById($data->userId);
+                    $data->phone = $dProfile->phone;
+                }
+                $data->name = $row['name'];
+                $data->description = $row['description'];
+                $data->isOpen = filter_var($row['is_open'], FILTER_VALIDATE_BOOLEAN);
+                $data->openTime = $row['open_time'];
+                $data->closedTime = $row['closed_time'];
+                $data->rating = $row['rating'];
+                $data->views = (int)$row['views'];
+                $data->imageId = $row['image_id'];
+                $data->imageUrl = "";
+                if (!empty($data->imageId)) {
+                    $data->imageUrl = urlPathImage()."".$row["file_name"];
+                }
+                $data->address = null;
+                $temp->addressId = $row['address_id'];
+                if (!empty($temp->addressId)) {
+                    $resultAddress = getAddressDetail($temp->addressId);
+                    if ($resultAddress->success = true) {
+                        $data->address = $resultAddress->data;
+                    } else {
+                        return;
+                    }   
+                } 
+                $data->latitude = $row['latitude'];
+                $data->longitude = $row['longitude'];
+                return resultBody(true, $data);
             } 
-            $data->latitude = $row['latitude'];
-            $data->longitude = $row['longitude'];
-            return resultBody(true, $data);
-        } 
+        } else {
+            response(400, "Id user mandatory");
+            return resultBody();
+        }
     } catch (Exception $e) {
         $error = $e->getMessage();
         response(500, $error);

@@ -47,17 +47,21 @@ function createProduct($body) {
     }
 }
 
-function getAllProduct($limit = 0) {
+function getProductAll($limit = 0, $warungId = NULL) {
     try {
         $conn = callDb();
         $array = array();
 
-        $sql = "SELECT f.file_name, c.category_name, p.* 
+        $sql = "SELECT f.file_name, w.deleted_at, c.category_name, p.* 
         FROM `product` p 
         LEFT JOIN `file` f ON p.image_id = f.file_id 
         LEFT JOIN `category` c ON p.category_id = c.category_id
         LEFT JOIN `warung` w ON p.warung_id = w.warung_id 
         WHERE w.deleted_at = '' AND p.deleted_at = ''";
+
+        if (!empty($warungId)) {
+            $sql = $sql." AND p.warung_id = '$warungId'";
+        }
 
         if (!empty($limit)) {
             $sql = $sql." LIMIT $limit";

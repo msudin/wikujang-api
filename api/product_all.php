@@ -5,7 +5,8 @@ try {
     clearstatcache();
     if (requestMethod() == "GET") {
         $limit = $_GET['limit'];
-        $result = getAllProduct($limit);
+        $warungId = $_GET['warungId'] ?? NULL;
+        $result = getProductAll($limit, $warungId);
         if ($result->success == true) {
             response(200, "record found", $result->data);
         }
