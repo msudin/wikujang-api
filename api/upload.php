@@ -8,7 +8,7 @@ try {
         if ($dToken != NULL) {
             if(isset($_FILES["file"]) && $_FILES["file"]["error"] == 0 && isset($_POST["type"])) {
                 $typeImage = $_POST["type"];
-                if ($typeImage == "profile" || $typeImage == "product" || $typeImage == "warung") {
+                if ($typeImage == "profile" || $typeImage == "product" || $typeImage == "warung" || $typeImage == "ads") {
                     $allowed = array("jpg" => "file/jpg", "jpeg" => "file/jpeg", "gif" => "file/gif", "png" => "file/png");
                     $filename = $_FILES["file"]["name"];
                     $filetype = $_FILES["file"]["type"];
