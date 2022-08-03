@@ -75,7 +75,7 @@ function getAllWarung() {
             $data->isOpen = filter_var($row['is_open'], FILTER_VALIDATE_BOOLEAN);
             $data->openTime = $row['open_time'];
             $data->closedTime = $row['closed_time'];
-            $data->rating = $row['rating'];
+            $data->rating = (double)0;
             $data->imageId = $row['image_id'];
             $data->imageUrl = "";
             if (!empty($data->imageId)) {
@@ -86,6 +86,12 @@ function getAllWarung() {
             if ($resultAddress->success = true) {
                 $data->address = $resultAddress->data;
             }
+
+            $wRating = getRatingWarung($data->id);
+            if ($wRating->success) {
+                $data->rating = (double)$wRating->data;
+            }
+
             $data->latitude = $row['latitude'];
             $data->longitude = $row['longitude'];
             array_push($array, $data);
@@ -312,6 +318,23 @@ function updateWarung($bodyRequest, $warungId) {
         $error = $e->getMessage();
         response(500, $error);
         return false;
+    }
+}
+
+function getRatingWarung($warungId) {
+    try {
+        $conn = callDb();
+        $rating = 0;
+
+        $sql = "SELECT AVG(r.rating) AS avg_rating FROM `product` p LEFT JOIN `review` r ON p.product_id = r.product_id WHERE p.warung_id = '$warungId'";
+        $result = $conn->query($sql);
+        while($row = $result->fetch_assoc()) {
+            $temp = $row['avg_rating'];
+            $rating = number_format((double)$temp, 2, '.', '');
+        }
+        return resultBody(true, $rating);
+    } catch (Exception $e) {
+        return resultBody();
     }
 }
 ?>

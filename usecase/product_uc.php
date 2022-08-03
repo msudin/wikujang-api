@@ -360,4 +360,25 @@ function updateProduct($bodyRequest) {
         return false;
     }
 }
+
+function getProductRating($productId) {
+    try {
+        $conn = callDb();
+        $rating = 0;
+
+        echo $productId;
+        $sql = "SELECT rating FROM `product`
+        WHERE product_id = '$productId'";
+
+        $result = $conn->query($sql);
+        while($row = $result->fetch_assoc()) {
+            $rating = $row['rating'];
+        }
+        return resultBody(true, $rating);
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        response(500, $error);
+        return resultBody();
+    }
+}
 ?>
