@@ -142,7 +142,7 @@ function getProductAll(
             $data->rating = $row['rating'];
             $data->likes = (int) $row['likes'];
             $data->views = (int) $row['views'];
-            $data->rating = $row['rating'];
+            $data->rating = (double) $row['rating'];
             $data->imageId = $row['image_id'];
             $data->imageUrl = "";
             if (!empty($data->imageId)) {
@@ -190,7 +190,7 @@ function getProductMe($warungId) {
             $data->name = $row['name'];
             $data->description = $row['description'];
             $data->price = (int) $row['price'];
-            $data->rating = $row['rating'];
+            $data->rating = (double) $row['rating'];
             $data->likes = (int) $row['likes'];
             $data->views = (int) $row['views'];
             $data->rating = $row['rating'];
@@ -243,6 +243,7 @@ function updateViews($productId) {
 
 function getProductById($productId) {
     updateViews($productId);
+
     try {
         $conn = callDb();
         $data = new stdClass();
@@ -260,10 +261,10 @@ function getProductById($productId) {
             $data->name = $row['name'];
             $data->description = $row['description'];
             $data->price = (int) $row['price'];
-            $data->rating = $row['rating'];
+            $data->rating = (double) $row['rating'];
             $data->likes = (int) $row['likes'];
             $data->views = (int) $row['views'];
-            $data->rating = $row['rating'];
+            $data->rating = (double) $row['rating'];
             $data->imageId = $row['image_id'];
             $data->imageUrl = "";
             if (!empty($data->imageId)) {
@@ -342,7 +343,7 @@ function updateProduct($bodyRequest) {
 
         if (!empty($bodyRequest['rating'])) {
             $rating = $bodyRequest['rating'];
-            $sql = $sql.", `rating` = '$rating'";
+            $sql = $sql.", `rating` = $rating";
         }
 
         /// QUERY RE-ACTIVATE Product

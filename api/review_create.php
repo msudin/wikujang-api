@@ -16,6 +16,7 @@ try {
                 $bodyRequest->rating = $data['rating'] ?? 0;
                 $bodyRequest->comment = $data['comment'] ?? "";
                 $bodyRequest->imageId = $data['imageId'] ?? "";
+                $bodyRequest->warungId = $dToken->warungId ?? "";
 
                 $dReview = createComment($bodyRequest);
                 if ($dReview->success) {
