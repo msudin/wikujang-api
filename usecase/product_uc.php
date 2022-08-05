@@ -62,7 +62,7 @@ function getProductAll(
         $conn = callDb();
         $array = array();
 
-        $sql = "SELECT f.file_name, w.deleted_at, c.category_name, p.* 
+        $sql = "SELECT f.file_name, c.category_name, p.* 
         FROM `product` p 
         LEFT JOIN `file` f ON p.image_id = f.file_id 
         LEFT JOIN `category` c ON p.category_id = c.category_id
@@ -139,7 +139,7 @@ function getProductAll(
             $data->name = $row['name'];
             $data->description = $row['description'];
             $data->price = (int) $row['price'];
-            $data->rating = $row['rating'];
+            $data->rating = (double) $row['rating'];
             $data->likes = (int) $row['likes'];
             $data->views = (int) $row['views'];
             $data->rating = (double) $row['rating'];
@@ -156,6 +156,10 @@ function getProductAll(
                 $category->id = $row['category_id'];
                 $category->name = $row['category_name'];
                 $data->category = $category;
+            }
+            $dRatingProduct = getAverageRatingProduct($data->id);
+            if ($dRatingProduct->success) {
+                $data->rating = $dRatingProduct->data;
             }
             array_push($array, $data);
         }
@@ -207,6 +211,10 @@ function getProductMe($warungId) {
                 $category->id = $row['category_id'];
                 $category->name = $row['category_name'];
                 $data->category = $category;
+            }
+            $dRatingProduct = getAverageRatingProduct($data->id);
+            if ($dRatingProduct->success) {
+                $data->rating = $dRatingProduct->data;
             }
             array_push($array, $data);
         }
@@ -284,6 +292,10 @@ function getProductById($productId) {
             if ($dWarung->success) {
                 $data->warung = $dWarung->data;
             }
+            $dRatingProduct = getAverageRatingProduct($data->id);
+            if ($dRatingProduct->success) {
+                $data->rating = $dRatingProduct->data;
+            }
         }
         return resultBody(true, $data);
     } catch (Exception $e) {
@@ -341,10 +353,10 @@ function updateProduct($bodyRequest) {
             $sql = $sql.", `image_id` = '$imageId'";
         }
 
-        if (!empty($bodyRequest['rating'])) {
-            $rating = $bodyRequest['rating'];
-            $sql = $sql.", `rating` = $rating";
-        }
+        // if (!empty($bodyRequest['rating'])) {
+        //     $rating = $bodyRequest['rating'];
+        //     $sql = $sql.", `rating` = $rating";
+        // }
 
         /// QUERY RE-ACTIVATE Product
         if (!empty($bodyRequest['activated']) && $bodyRequest['activated'] == true ) {
@@ -359,27 +371,6 @@ function updateProduct($bodyRequest) {
         $error = $e->getMessage();
         response(500, $error);
         return false;
-    }
-}
-
-function getProductRating($productId) {
-    try {
-        $conn = callDb();
-        $rating = 0;
-
-        echo $productId;
-        $sql = "SELECT rating FROM `product`
-        WHERE product_id = '$productId'";
-
-        $result = $conn->query($sql);
-        while($row = $result->fetch_assoc()) {
-            $rating = $row['rating'];
-        }
-        return resultBody(true, $rating);
-    } catch (Exception $e) {
-        $error = $e->getMessage();
-        response(500, $error);
-        return resultBody();
     }
 }
 ?>

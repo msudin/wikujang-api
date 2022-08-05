@@ -86,7 +86,10 @@ function getAllWarung() {
             if ($resultAddress->success = true) {
                 $data->address = $resultAddress->data;
             }
-
+            $dRatingWarung = getAverageRatingWarung($data->id);
+            if ($dRatingWarung->success) {
+                $data->rating = $dRatingWarung->data;
+            }
             $data->latitude = $row['latitude'];
             $data->longitude = $row['longitude'];
             array_push($array, $data);
@@ -142,6 +145,10 @@ function getWarungByUserId($id = NULL) {
                         return;
                     }   
                 } 
+                $dRatingWarung = getAverageRatingWarung($data->id);
+                if ($dRatingWarung->success) {
+                    $data->rating = $dRatingWarung->data;
+                }
                 $data->latitude = $row['latitude'];
                 $data->longitude = $row['longitude'];
                 return resultBody(true, $data);
@@ -172,6 +179,7 @@ function getWarungById($id) {
         while($row = $result->fetch_assoc()) {
             $data->id = $row['warung_id'];
             $data->userId = (int)$row['user_id'];
+            /// phone
             if (!empty($data->userId)) {
                 $dProfile = getUserPhoneById($data->userId);
                 $data->phone = $dProfile->phone;
@@ -185,11 +193,13 @@ function getWarungById($id) {
             $data->views = (int)$row['views'];
             $data->imageId = $row['image_id'];
             $data->imageUrl = "";
+            /// file
             if (!empty($data->imageId)) {
                 $data->imageUrl = urlPathImage()."".$row["file_name"];
             }
             $data->address = null;
             $temp->addressId = $row['address_id'];
+            /// address
             if (!empty($temp->addressId)) {
                 $resultAddress = getAddressDetail($temp->addressId);
                 if ($resultAddress->success = true) {
@@ -198,6 +208,11 @@ function getWarungById($id) {
                     return;
                 }   
             } 
+            /// rating
+            $dRatingWarung = getAverageRatingWarung($data->id);
+            if ($dRatingWarung->success) {
+                $data->rating = $dRatingWarung->data;
+            }
             $data->latitude = $row['latitude'];
             $data->longitude = $row['longitude'];
             return resultBody(true, $data);
@@ -255,10 +270,10 @@ function updateWarung($bodyRequest, $warungId) {
             $sql = $sql.", `views` = $views";
         }
 
-        if (!empty($bodyRequest['rating'])) {
-            $rating = $bodyRequest['rating'];
-            $sql = $sql.", `rating` = $rating";
-        }
+        // if (!empty($bodyRequest['rating'])) {
+        //     $rating = $bodyRequest['rating'];
+        //     $sql = $sql.", `rating` = $rating";
+        // }
 
         if (!empty($bodyRequest['imageId'])) {
             $imageId = $bodyRequest['imageId'];

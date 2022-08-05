@@ -10,6 +10,7 @@ function createComment($body) {
         $sql = "INSERT INTO `review` (
             `review_id`,
             `product_id`,
+            `user_id`,
             `comment`,
             `image_id`,
             `rating`,
@@ -19,6 +20,7 @@ function createComment($body) {
             ) VALUES (
                 '$id',
                 '$body->productId',
+                '$body->userId',
                 '$body->comment',
                 '$body->imageId',
                 $body->rating,
@@ -29,14 +31,9 @@ function createComment($body) {
         $result = $conn->query($sql);
         if ($result == 1) {
             $dRatingProduct = getAverageRatingProduct($body->productId);
-            $dRatingWarung = getAverageRatingWarung($body->warungId);
             if ($dRatingProduct->success) {
-                $bodyRequestProduct = ['productId' => $body->productId, 'rating' => $dRatingProduct->data];
-                $dUpdateProduct = updateProduct($bodyRequestProduct);
-
-                $bodyRequestWarung = ['rating' => $dRatingWarung->data];
-                $dUpdateWarung = updateWarung($bodyRequestWarung, $body->warungId);
-                return resultBody(true, $dRatingProduct->data);
+                // return resultBody(true, $dRatingProduct->data);
+                return resultBody(true);
             }
         }
     } catch (Exception $e) {
@@ -51,14 +48,16 @@ function getAverageRatingProduct($dProductId) {
         $conn = callDb();
         $rating = 0;
 
-        $sql = "SELECT AVG(`rating`) AS avg_rating FROM `review` WHERE `product_id` = '$dProductId' AND `deleted_at` = ''";
+        $sql = "SELECT AVG(`rating`) AS avg_rating FROM `review` WHERE product_id = '$dProductId' AND deleted_at = ''";
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) {
             $temp = $row['avg_rating'];
             $rating = number_format((double)$temp, 2, '.', '');
         }
-        return resultBody(true, $rating);
+        return resultBody(true, (double) $rating);
     } catch (Exception $e) {
+        // $error = $e->getMessage();
+        // response(500, $error);
         return resultBody();
     }
 }
@@ -68,14 +67,18 @@ function getAverageRatingWarung($warungId) {
         $conn = callDb();
         $rating = 0;
 
-        $sql = "SELECT AVG(r.rating) AS avg_rating FROM `product` p LEFT JOIN `review` r ON `p.product_id` = `r.product_id` WHERE `p.warung_id` = '$warungId' AND `r.deleted_at` = ''";
+        $sql = "SELECT AVG(r.rating) AS avg_rating, r.deleted_at FROM `product` p 
+        LEFT JOIN `review` r ON p.product_id = r.product_id
+        WHERE `warung_id` = '$warungId' AND r.deleted_at = ''";
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) {
             $temp = $row['avg_rating'];
             $rating = number_format((double)$temp, 2, '.', '');
         }
-        return resultBody(true, $rating);
+        return resultBody(true, (double) $rating);
     } catch (Exception $e) {
+        // $error = $e->getMessage();
+        // response(500, $error);
         return resultBody();
     }
 }
