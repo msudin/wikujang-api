@@ -110,7 +110,7 @@ function validateWarungExist($userId, $username) {
             $conn = callDb();
             $sql = "SELECT COUNT(warung_id) AS TotalWarung 
                 FROM warung WHERE `user_id`=$userId 
-                AND deleted_at=''";
+                AND deleted_at = ''";
 
             $resultSql = $conn->query($sql);
             while($rowData = $resultSql->fetch_assoc()) {

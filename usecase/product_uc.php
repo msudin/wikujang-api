@@ -180,7 +180,8 @@ function getProductMe($warungId) {
         FROM `product` p 
         LEFT JOIN `file` f ON p.image_id = f.file_id
         LEFT JOIN `category` c ON p.category_id = c.category_id
-        WHERE warung_id = '$warungId'";
+        LEFT JOIN `warung` w ON p.warung_id = w.warung_id
+        WHERE p.warung_id = '$warungId' AND p.deleted_at = '' AND w.deleted_at = ''";
 
         if (!empty($limit)) {
             $sql = $sql." LIMIT $limit";
