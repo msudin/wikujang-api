@@ -2,7 +2,7 @@
 include_once('../helper/import.php');
 
 try {
-    if (requestMethod() == "POST") { 
+    if (requestMethod() == "DELETE") { 
         $entityBody = file_get_contents('php://input');
         $data = json_decode($entityBody, true);
         if (!empty($entityBody)) {

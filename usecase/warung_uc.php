@@ -164,7 +164,31 @@ function getWarungByUserId($id = NULL) {
     }
 }
 
+function updateWarungViews($warungId) {
+    try {
+        clearstatcache();
+        $conn = callDb();
+        $updatedAt = currentTime();
+
+        $sqlSelectViews = "SELECT `views` FROM warung WHERE warung_id = '$warungId'";
+        $result = $conn->query($sqlSelectViews);
+        while($row = $result->fetch_assoc()) { 
+            $currentViews = (int) $row['views'];
+            $newViews = $currentViews + 1;
+            $sql = "UPDATE `warung` SET 
+                `updated_at` = '$updatedAt',
+                `views` = $newViews 
+            WHERE warung_id = '$warungId'";
+            $conn->query($sql);
+        }
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        response(500, $error);
+    }
+}
+
 function getWarungById($id) {
+    updateWarungViews($id);
     try {
         $conn = callDb();
         $data = new stdClass();

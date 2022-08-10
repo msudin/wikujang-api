@@ -354,11 +354,6 @@ function updateProduct($bodyRequest) {
             $sql = $sql.", `image_id` = '$imageId'";
         }
 
-        // if (!empty($bodyRequest['rating'])) {
-        //     $rating = $bodyRequest['rating'];
-        //     $sql = $sql.", `rating` = $rating";
-        // }
-
         /// QUERY RE-ACTIVATE Product
         if (!empty($bodyRequest['activated']) && $bodyRequest['activated'] == true ) {
             $sql = $sql.", `deleted_at` = ''";
