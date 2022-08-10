@@ -31,7 +31,7 @@ function createProduct($body) {
                 '$body->imageId',
                 0,
                 0,
-                0,
+                $body->discountAmount,
                 0,
                 0,
                 '$currentDate',
@@ -139,6 +139,7 @@ function getProductAll(
             $data->name = $row['name'];
             $data->description = $row['description'];
             $data->price = (int) $row['price'];
+            $data->discountAmount = (int) $row['discount_amount'];
             $data->rating = (double) $row['rating'];
             $data->likes = (int) $row['likes'];
             $data->views = (int) $row['views'];
@@ -195,6 +196,7 @@ function getProductMe($warungId) {
             $data->name = $row['name'];
             $data->description = $row['description'];
             $data->price = (int) $row['price'];
+            $data->discountAmount = (int) $row['discount_amount'];
             $data->rating = (double) $row['rating'];
             $data->likes = (int) $row['likes'];
             $data->views = (int) $row['views'];
@@ -271,6 +273,7 @@ function getProductById($productId) {
             $data->description = $row['description'];
             $data->price = (int) $row['price'];
             $data->rating = (double) $row['rating'];
+            $data->discountAmount = (int) $row['discount_amount'];
             $data->likes = (int) $row['likes'];
             $data->views = (int) $row['views'];
             $data->rating = (double) $row['rating'];
@@ -352,6 +355,11 @@ function updateProduct($bodyRequest) {
         if (!empty($bodyRequest['imageId'])) {
             $imageId = $bodyRequest['imageId'];
             $sql = $sql.", `image_id` = '$imageId'";
+        }
+
+        if (!empty($bodyRequest['discountAmount'])) {
+            $discountAmount = $bodyRequest['discountAmount'];
+            $sql = $sql.", `discount_amount` = '$discountAmount'";
         }
 
         /// QUERY RE-ACTIVATE Product

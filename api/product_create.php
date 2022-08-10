@@ -17,7 +17,8 @@ try {
                     $bodyRequest->name = $data['name'] ?? "";
                     $bodyRequest->description = $data['description'] ?? "";
                     $bodyRequest->categoryId = $data['categoryId'] ?? "";
-                    $bodyRequest->price = (Int) $data['price'] ?? 0;
+                    $bodyRequest->price = (int) $data['price'] ?? 0;
+                    $bodyRequest->discountAmount = (int) $data['discountAmount'] ?? 0;
                     $bodyRequest->imageId = $data['imageId'] ?? "";
 
                     if(!empty($bodyRequest->warungId)) {
