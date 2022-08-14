@@ -32,7 +32,6 @@ function createComment($body) {
         if ($result == 1) {
             $dRatingProduct = getAverageRatingProduct($body->productId);
             if ($dRatingProduct->success) {
-                // return resultBody(true, $dRatingProduct->data);
                 return resultBody(true);
             }
         }
@@ -56,8 +55,6 @@ function getAverageRatingProduct($dProductId) {
         }
         return resultBody(true, (double) $rating);
     } catch (Exception $e) {
-        // $error = $e->getMessage();
-        // response(500, $error);
         return resultBody();
     }
 }
@@ -77,8 +74,51 @@ function getAverageRatingWarung($warungId) {
         }
         return resultBody(true, (double) $rating);
     } catch (Exception $e) {
-        // $error = $e->getMessage();
-        // response(500, $error);
+        return resultBody();
+    }
+}
+
+function getAllReviewByProductId($dProductId) {
+    try {
+        $conn = callDb();
+        $array = array();
+
+        $sql = "SELECT f.file_name, f.type, r.* 
+        FROM `review` r 
+        LEFT JOIN `file` f ON r.image_id = f.file_id";
+        if (!empty($dProductId)) {
+            $sql = $sql." WHERE product_id = '$dProductId'";
+        }
+        $sql = $sql." ORDER BY created_at DESC";
+
+        $result = $conn->query($sql);
+        while($row = $result->fetch_assoc()) {
+            $data = new stdClass();
+            $data->id = $row['review_id'];
+            $data->productId = $row['product_id'];
+            $data->comment = $row['comment'];
+            $data->rating = (double) $row['rating'];
+            $data->image = null;
+            $data->user = null;
+            if (!empty($row["image_id"])) {
+                $photo = new stdClass();
+                $photo->id = $row["image_id"];
+                $photo->fileUrl = urlPathImage()."".$row['file_name'];
+                $photo->fileName = $row['file_name'];
+                $data->image = $photo;
+            }
+            if (!empty($row['user_id'])) {
+                $dUser = getUserById($row['user_id'], false);
+                if ($dUser != NULL) {
+                    $data->user = $dUser;
+                }
+            }
+            array_push($array, $data);
+        }
+        return resultBody(true, $array);
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        response(500, $error);
         return resultBody();
     }
 }

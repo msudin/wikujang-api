@@ -69,17 +69,32 @@ function getUserByPhone($phone) {
     }
 }
 
-function getUserById($userId) {
+function getUserById(
+    $userId, 
+    $showAddress = true, 
+    $showProfileImage = true
+    ) {
     try {
         $connn = callDb();
         $server_url = urlPathImage();
 
-        $sql = "SELECT f.file_name, f.type, ad.address_id, ad.subdistrict_id, ad.district_id, ad.address_detail, u.* 
-        FROM `user` u 
-        LEFT JOIN `file` f ON u.image_id = f.file_id 
-        LEFT JOIN `address` ad ON u.address_id = ad.address_id 
-        WHERE u.user_id=$userId";
+        // $sql = "SELECT f.file_name, f.type, ad.address_id, ad.subdistrict_id, ad.district_id, ad.address_detail, u.* 
+        // FROM `user` u 
+        // LEFT JOIN `file` f ON u.image_id = f.file_id 
+        // LEFT JOIN `address` ad ON u.address_id = ad.address_id 
+        // WHERE u.user_id=$userId";
 
+        $sql = "SELECT";
+        if ($showProfileImage) {
+            $sql = $sql." f.file_name, f.type,";
+        }
+
+        $sql = $sql." u.* FROM `user` u";
+        if ($showProfileImage) {
+            $sql = $sql." LEFT JOIN `file` f ON u.image_id = f.file_id";
+        }
+
+        $sql = $sql." WHERE u.user_id = $userId ";
         $result = $connn->query($sql);
         if ($result->num_rows == 1) {
             while($row = $result->fetch_assoc()) {
@@ -92,20 +107,24 @@ function getUserById($userId) {
                 $data->birthdate = $row['birthdate'];
                 $data->gender = $row['gender'];
                 $data->profileImage = NULL;
-                if (!empty($row["image_id"])) {
-                    $photo = new stdClass();
-                    $photo->id = $row["image_id"];
-                    $photo->fileUrl = urlPathImage()."".$row['file_name'];
-                    $photo->fileName = $row['file_name'];
-                    $data->profileImage = $photo;
-                }
                 $data->address = NULL;
-                if (!empty($row["address_id"])) {
-                    // query get detail Address;
-                    $resultAddress = getAddressDetail($row["address_id"]);
-                    if ($resultAddress->success = true) {
-                        $data->address = $resultAddress->data;
-                    } 
+                if ($showProfileImage) {
+                    if (!empty($row["image_id"])) {
+                        $photo = new stdClass();
+                        $photo->id = $row["image_id"];
+                        $photo->fileUrl = urlPathImage()."".$row['file_name'];
+                        $photo->fileName = $row['file_name'];
+                        $data->profileImage = $photo;
+                    }
+                }
+                if ($showAddress) {
+                    if (!empty($row["address_id"])) {
+                        // query get detail Address;
+                        $resultAddress = getAddressDetail($row["address_id"]);
+                        if ($resultAddress->success = true) {
+                            $data->address = $resultAddress->data;
+                        } 
+                    }
                 }
                 $data->isActive = filter_var($row['active'], FILTER_VALIDATE_BOOLEAN);
                 $data->role = $row['role'];
@@ -306,18 +325,11 @@ function getAllUser() {
             $data->role = $row["role"];
             array_push($array, $data);
         }
-        $resultData = new stdClass();
-        $resultData->success = true;
-        $resultData->data = $array;
-        return $resultData;
+        return resultBody(true, $array);
     } catch (Exception $e) {
         $error = $e->getMessage();
         response(500, "$error");
-
-        $resultData = new stdClass();
-        $resultData->success = false;
-        $resultData->data = NULL;
-        return $resultData;
+        return resultBody();;
     }
 }
 ?>
