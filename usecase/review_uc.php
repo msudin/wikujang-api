@@ -29,12 +29,7 @@ function createComment($body) {
                 ''
             )";
         $result = $conn->query($sql);
-        if ($result == 1) {
-            $dRatingProduct = getAverageRatingProduct($body->productId);
-            if ($dRatingProduct->success) {
-                return resultBody(true);
-            }
-        }
+        return resultBody(true);
     } catch (Exception $e) {
         $error = $e->getMessage();
         response(500, $error);
@@ -101,11 +96,13 @@ function getAllReviewByProductId($dProductId) {
             $data->image = null;
             $data->user = null;
             if (!empty($row["image_id"])) {
+                $arrayImage = array();
                 $photo = new stdClass();
                 $photo->id = $row["image_id"];
                 $photo->fileUrl = urlPathImage()."".$row['file_name'];
                 $photo->fileName = $row['file_name'];
-                $data->image = $photo;
+                array_push($arrayImage, $photo);
+                $data->image = $arrayImage;
             }
             if (!empty($row['user_id'])) {
                 $dUser = getUserById($row['user_id'], false);
@@ -113,6 +110,9 @@ function getAllReviewByProductId($dProductId) {
                     $data->user = $dUser;
                 }
             }
+            $data->createdAt = $row["created_at"];
+            $data->updatedAt = $row["updated_at"];
+            $data->deletedAt = $row["deleted_at"];
             array_push($array, $data);
         }
         return resultBody(true, $array);

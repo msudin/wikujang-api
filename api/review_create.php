@@ -16,11 +16,10 @@ try {
                 $bodyRequest->rating = $data['rating'] ?? 0;
                 $bodyRequest->comment = $data['comment'] ?? "";
                 $bodyRequest->imageId = $data['imageId'] ?? "";
-                $bodyRequest->warungId = $dToken->warungId ?? "";
 
                 $dReview = createComment($bodyRequest);
                 if ($dReview->success) {
-                    response(200, "Berhasil review menu", (double)$dReview->data);
+                    response(200, "Termima kasih ulasannya");
                 }
             }
         } else {
