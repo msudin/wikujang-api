@@ -184,10 +184,6 @@ function getProductMe($warungId) {
         LEFT JOIN `warung` w ON p.warung_id = w.warung_id
         WHERE p.warung_id = '$warungId' AND p.deleted_at = '' AND w.deleted_at = ''";
 
-        if (!empty($limit)) {
-            $sql = $sql." LIMIT $limit";
-        }
-
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) {
             $data = new stdClass();

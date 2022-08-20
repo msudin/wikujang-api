@@ -5,7 +5,8 @@ try {
     clearstatcache();
     if (requestMethod() == "GET") { 
         $productId = $_GET['productId'] ?? NULL;
-        $resultReview = getAllReviewByProductId($productId);
+        $limit = $_GET['limit'] ?? NULL;
+        $resultReview = getAllReviewByProductId($productId, $limit);
         if ($resultReview->success == true) {
             response(200, "record found", $resultReview->data);
         }

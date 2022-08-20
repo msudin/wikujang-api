@@ -73,7 +73,7 @@ function getAverageRatingWarung($warungId) {
     }
 }
 
-function getAllReviewByProductId($dProductId) {
+function getAllReviewByProductId($dProductId = NULL, $limit = NULL) {
     try {
         $conn = callDb();
         $array = array();
@@ -85,6 +85,9 @@ function getAllReviewByProductId($dProductId) {
             $sql = $sql." WHERE product_id = '$dProductId'";
         }
         $sql = $sql." ORDER BY created_at DESC";
+        if (!empty($limit)) {
+            $sql = $sql." LIMIT $limit";
+        }
 
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) {
