@@ -57,7 +57,7 @@ function getProductAll(
         $views = NULL,
         $price = NULL, 
         $rating = NULL, 
-        $sort = "asc"
+        $sort = NULL
     ) {
     try {
         $conn = callDb();
