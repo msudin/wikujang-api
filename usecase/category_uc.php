@@ -54,7 +54,7 @@ function updateCategory($bodyRequest) {
 
         $sql = "UPDATE `category` 
             SET `category_name` = '$bodyRequest->categoryName', `updated_at` = '$currentDate' 
-            WHERE `category_id` = $bodyRequest->id";
+            WHERE `category_id` = '$bodyRequest->id'";
         $conn->query($sql);
         return true;
     } catch (Exception $e) {
