@@ -37,7 +37,7 @@ function deleteCategory($bodyRequest) {
         $conn = callDb();
         $currentDate = currentTime();
 
-        $sql = "UPDATE `category` SET `deleted_at` = '$currentDate' WHERE `category_id` = $bodyRequest->id";
+        $sql = "UPDATE `category` SET `deleted_at` = '$currentDate' WHERE `category_id` = '$bodyRequest->id'";
         $conn->query($sql);
         return true;
     } catch (Exception $e) {
