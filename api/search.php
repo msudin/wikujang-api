@@ -14,6 +14,7 @@ try {
         $views = $_GET['views'] ?? NULL; // asc, desc
         $price = $_GET['price'] ?? NULL; // asc, desc
         $rating = $_GET['rating'] ?? NULL; // asc, desc
+        $sort = $_GET['sort'] ?? NULL; // asc, desc
         
         // FILTER FUNCTION
         $dProduct = getProductAll(
@@ -25,7 +26,8 @@ try {
             $categoryId,
             $views, 
             $price,
-            $rating
+            $rating,
+            $sort
         );
 
         if ($dProduct->success) {

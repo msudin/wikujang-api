@@ -56,7 +56,8 @@ function getProductAll(
         $categoryId = NULL, 
         $views = NULL,
         $price = NULL, 
-        $rating = NULL
+        $rating = NULL, 
+        $sort = "asc"
     ) {
     try {
         $conn = callDb();
@@ -83,50 +84,57 @@ function getProductAll(
             $sql = $sql." AND p.warung_id = '$warungId'";
         }
 
-        $isFilterByViews = false;
-        if (!empty($views)) {
-            $isFilterByViews = true;
-            if ($views == "desc") {
-                $sql = $sql." ORDER BY p.views DESC";   
+        if (!empty($sort)) {
+            if ($sort == "desc") {
+                $sql = $sql." ORDER BY p.created_at DESC";   
             } else {
-                $sql = $sql." ORDER BY p.views ASC";   
+                $sql = $sql." ORDER BY p.created_at ASC";   
             }
-        }
-
-        $isFilterByPrice = false;
-        if (!empty($price)) {
-            $isFilterByPrice = true;
-            if ($isFilterByViews) {
-                if ($price == "desc") {
-                    $sql = $sql.", p.price DESC";   
+        } else {
+            $isFilterByViews = false;
+            if (!empty($views)) {
+                $isFilterByViews = true;
+                if ($views == "desc") {
+                    $sql = $sql." ORDER BY p.views DESC";   
                 } else {
-                    $sql = $sql.", p.price ASC";   
-                }
-            } else {
-                if ($price == "desc") {
-                    $sql = $sql." ORDER BY p.price DESC";   
-                } else {
-                    $sql = $sql." ORDER BY p.price ASC";   
+                    $sql = $sql." ORDER BY p.views ASC";   
                 }
             }
-        }
 
-        if (!empty($rating)) {
-            if ($isFilterByViews || $isFilterByPrice) {
-                if ($rating == "desc") {
-                    $sql = $sql.", p.rating DESC";   
+            $isFilterByPrice = false;
+            if (!empty($price)) {
+                $isFilterByPrice = true;
+                if ($isFilterByViews) {
+                    if ($price == "desc") {
+                        $sql = $sql.", p.price DESC";   
+                    } else {
+                        $sql = $sql.", p.price ASC";   
+                    }
                 } else {
-                    $sql = $sql.", p.rating ASC";   
+                    if ($price == "desc") {
+                        $sql = $sql." ORDER BY p.price DESC";   
+                    } else {
+                        $sql = $sql." ORDER BY p.price ASC";   
+                    }
                 }
-            } else {
-                if ($rating == "desc") {
-                    $sql = $sql." ORDER BY p.rating DESC";   
+            }
+
+            if (!empty($rating)) {
+                if ($isFilterByViews || $isFilterByPrice) {
+                    if ($rating == "desc") {
+                        $sql = $sql.", p.rating DESC";   
+                    } else {
+                        $sql = $sql.", p.rating ASC";   
+                    }
                 } else {
-                    $sql = $sql." ORDER BY p.rating ASC";   
+                    if ($rating == "desc") {
+                        $sql = $sql." ORDER BY p.rating DESC";   
+                    } else {
+                        $sql = $sql." ORDER BY p.rating ASC";   
+                    }
                 }
             }
         }
-
         if (!empty($limit)) {
             $sql = $sql." LIMIT $limit";
         }
@@ -162,6 +170,7 @@ function getProductAll(
             if ($dRatingProduct->success) {
                 $data->rating = $dRatingProduct->data;
             }
+            $data->createdAt = $row['created_at'];
             array_push($array, $data);
         }
         return resultBody(true, $array);

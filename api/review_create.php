@@ -19,7 +19,7 @@ try {
 
                 $dReview = createComment($bodyRequest);
                 if ($dReview->success) {
-                    response(200, "Termima kasih ulasannya");
+                    response(200, "Terima kasih ulasannya");
                 }
             }
         } else {
