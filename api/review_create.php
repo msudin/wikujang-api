@@ -21,7 +21,7 @@ try {
                     response(200, "Terima kasih ulasannya");
                     
                     // Update Rating Menu [Manually]
-                    // bulkRatingByMenuId($bodyRequest->productId);
+                    bulkRatingByMenuId($bodyRequest->productId);
                 }
             }
         } else {
