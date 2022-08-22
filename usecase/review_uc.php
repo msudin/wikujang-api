@@ -45,7 +45,7 @@ function getAverageRatingProduct($dProductId) {
         $sql = "SELECT AVG(`rating`) AS avg_rating FROM `review` WHERE product_id = '$dProductId' AND deleted_at = ''";
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) {
-            $temp = $row['avg_rating'];
+            $temp = $row['avg_rating'] ?? 0;
             $rating = number_format((double)$temp, 2, '.', '');
         }
         return resultBody(true, (double) $rating);
@@ -64,7 +64,7 @@ function getAverageRatingWarung($warungId) {
         WHERE `warung_id` = '$warungId' AND r.deleted_at = ''";
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) {
-            $temp = $row['avg_rating'];
+            $temp = $row['avg_rating'] ?? 0;
             $rating = number_format((double)$temp, 2, '.', '');
         }
         return resultBody(true, (double) $rating);

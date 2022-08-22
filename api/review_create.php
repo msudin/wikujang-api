@@ -16,10 +16,12 @@ try {
                 $bodyRequest->rating = $data['rating'] ?? 0;
                 $bodyRequest->comment = $data['comment'] ?? "";
                 $bodyRequest->imageId = $data['imageId'] ?? "";
-
                 $dReview = createComment($bodyRequest);
                 if ($dReview->success) {
                     response(200, "Terima kasih ulasannya");
+                    
+                    // Update Rating Menu [Manually]
+                    // bulkRatingByMenuId($bodyRequest->productId);
                 }
             }
         } else {

@@ -78,6 +78,15 @@ try {
                     $conn->query($sqlAdmin);
                 }
             }
+
+            // DROP ALL DATA REVIEW
+            if (!empty($data["review"])) {
+                if ($data['review'] == TRUE) {
+                    $sqlAdmin = "DELETE FROM `review`";
+                    $conn->query($sqlAdmin);
+                    bulkRatingMenu();
+                }
+            }
         }
         response(200, "success drop data");
     } else {

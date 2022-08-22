@@ -47,6 +47,27 @@ function createProduct($body) {
     }
 }
 
+function bulkRatingByMenuId($menuId) {
+    $dRating = getAverageRatingProduct($menuId);
+    $entityData = ['rating' => $dRating->data, 'productId' => $menuId];
+    updateProduct($entityData);
+}
+
+function bulkRatingMenu() {
+    try {
+        $conn = callDb();
+        $sql = "SELECT `product_id` FROM product";
+        $result = $conn->query($sql);
+        while($row = $result->fetch_assoc()) {
+            $productId = $row['product_id'];
+            bulkRatingByMenuId($productId);
+        }
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        response(500, "$error");
+    }
+}
+
 function getProductAll(
         $limit = 0,
         $warungId = NULL, 
@@ -360,6 +381,11 @@ function updateProduct($bodyRequest) {
         if (!empty($bodyRequest['imageId'])) {
             $imageId = $bodyRequest['imageId'];
             $sql = $sql.", `image_id` = '$imageId'";
+        }
+
+        if (!empty($bodyRequest['rating'])) {
+            $rating = $bodyRequest['rating'];
+            $sql = $sql.", `rating` = $rating";
         }
 
         if (!empty($bodyRequest['discountAmount'])) {
