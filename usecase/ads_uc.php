@@ -57,7 +57,7 @@ function getAdsAll($status = NULL) {
         AND w.deleted_at = ''";
 
         if (!empty($status)) {
-            $sql = $sql.", AND `a.status` = '$status'";
+            $sql = $sql." AND status = '$status'";
         }
         
         $result = $conn->query($sql);
