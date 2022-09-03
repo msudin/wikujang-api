@@ -6,11 +6,13 @@ try {
     if (requestMethod() == "POST") { 
         $entityBody = file_get_contents('php://input');
         $entityData = json_decode($entityBody, true);
-        if (!empty($entityBody) && !empty($entityData["newPassword"])) { 
+        if (!empty($entityBody) && !empty($entityData["newPassword"]) && !empty($entityData["phone"])) { 
             $isSuccess = forgotPassword($entityData);
             if ($isSuccess) {
-                response(200, "Berhasil ubah password");
+                response(200, "Silahkan login kembali");
             }
+        } else {
+            response(500);    
         }
     } else {
         response(500);

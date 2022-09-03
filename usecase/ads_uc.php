@@ -59,6 +59,8 @@ function getAdsAll($status = NULL) {
         if (!empty($status)) {
             $sql = $sql." AND status = '$status'";
         }
+
+        $sql = $sql." ORDER BY a.created_at DESC ";
         
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) {
@@ -78,6 +80,9 @@ function getAdsAll($status = NULL) {
             $warung->id = $row['warung_id'];
             $warung->name = $row['warung_name'];
             $data->warung = $warung;
+            $data->createdAt = $row['created_at'];
+            $data->updatedAt = $row['updated_at'];
+            $data->deletedAt = $row['deleted_at'];
             array_push($array, $data);
         }
         return resultBody(true, $array);
