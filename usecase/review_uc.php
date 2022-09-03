@@ -61,7 +61,7 @@ function getAverageRatingWarung($warungId) {
 
         $sql = "SELECT AVG(r.rating) AS avg_rating, r.deleted_at FROM `product` p 
         LEFT JOIN `review` r ON p.product_id = r.product_id
-        WHERE `warung_id` = '$warungId' AND r.deleted_at = ''";
+        WHERE `warung_id` = '$warungId' AND r.deleted_at = '' AND p.deleted_at = ''";
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) {
             $temp = $row['avg_rating'] ?? 0;
