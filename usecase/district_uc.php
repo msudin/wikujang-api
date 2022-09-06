@@ -12,7 +12,7 @@ function createDistrict($bodyRequest) {
             `updated_at`,
             `deleted_at`
             ) VALUES (
-                 $bodyRequest->subdistrictId,
+                 $bodyRequest->subDistrictId,
                  '$bodyRequest->name',
                  '$currentDate',
                  '$currentDate',

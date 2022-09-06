@@ -9,7 +9,7 @@ try {
         $arrayList = array_values($entityData['district']);
         foreach($arrayList as $entity) {
             $data = new stdClass();
-            $data->subDistrictId = (int)$entity['subdistrictId'];
+            $data->subDistrictId = $entity['subdistrictId'];
             $data->name = $entity['name'];
             createDistrict($data);
         }
