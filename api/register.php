@@ -10,9 +10,9 @@ try {
             $bodyRequest->fullName = $data['fullName'] ?? NULL;
             $bodyRequest->userName = $data['userName'] ?? NULL;
             
-            // $bodyRequest->phone = $data['phone'] ?? NULL;
-            $phone = $data['phone'] ?? NULL ;
-            $bodyRequest->phone = preg_replace('/0/', '+62', $phone, 1);
+            $bodyRequest->phone = $data['phone'] ?? NULL;
+            // $phone = $data['phone'] ?? NULL ;
+            // $bodyRequest->phone = preg_replace('/0/', '+62', $phone, 1);
 
             $bodyRequest->password = $data['password'] ?? NULL;
             $bodyRequest->email = $data['email'] ?? NULL;
