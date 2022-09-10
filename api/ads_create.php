@@ -9,13 +9,13 @@ try {
         $headerToken = headerToken();
         if (!empty($entityBody)) {
             $dToken = validateToken($headerToken);
-            if ($dToken != NULL) {
+            if ($dToken->isAdmin == true || !empty($dToken->warungId)) {
                 $bodyRequest = new stdClass();
                 $bodyRequest->warungId = $dToken->warungId;
                 $bodyRequest->name = $data['name'] ?? "";
                 $bodyRequest->description = $data['description'] ?? "";
                 $bodyRequest->imageId = $data['imageId'] ?? "";
-                $bodyRequest->status = $data['status'] ?? "inactive";
+                $bodyRequest->status = $data['status'] ?? "waiting_payment";
                 $bodyRequest->startDate = $data['startDate'] ?? '';
                 $bodyRequest->endDate = $data['endDate'] ?? '';
 
@@ -23,6 +23,8 @@ try {
                 if ($dAds->success) {
                     response(200, "Berhasil tambah iklan");
                 }
+            } else {
+                response(400, "Silahkan buka warung terlebih dahulu");
             }
         } else {
             response(400);

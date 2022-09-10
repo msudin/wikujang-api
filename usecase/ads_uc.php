@@ -53,11 +53,10 @@ function getAdsAll($status = NULL, $limit = NULL) {
         FROM `ads` a
         LEFT JOIN `file` f ON a.image_id = f.file_id 
         LEFT JOIN `warung` w ON a.warung_id = w.warung_id
-        WHERE a.deleted_at = '' 
-        AND w.deleted_at = ''";
+        WHERE (a.deleted_at = '' OR w.deleted_at = '')";
 
         if (!empty($status)) {
-            $sql = $sql." AND `status` = '$status'";
+            $sql = $sql." AND `status`='$status'";
         }
 
         $sql = $sql." ORDER BY a.created_at DESC";
@@ -79,10 +78,13 @@ function getAdsAll($status = NULL, $limit = NULL) {
             if (!empty($row['file_name'])) {
                 $data->imageUrl = urlPathImage()."".$row["file_name"];
             }
-            $warung = new stdClass();
-            $warung->id = $row['warung_id'];
-            $warung->name = $row['warung_name'];
-            $data->warung = $warung;
+            $data->warung = NULL;
+            if (!empty($row['warung_id'])) {
+                $warung = new stdClass();
+                $warung->id = $row['warung_id'];
+                $warung->name = $row['warung_name'];
+                $data->warung = $warung;
+            }
             $data->createdAt = $row['created_at'];
             $data->updatedAt = $row['updated_at'];
             $data->deletedAt = $row['deleted_at'];
