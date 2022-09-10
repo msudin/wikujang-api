@@ -57,7 +57,7 @@ function getAdsAll($status = NULL, $limit = NULL) {
         AND w.deleted_at = ''";
 
         if (!empty($status)) {
-            $sql = $sql." AND status = '$status'";
+            $sql = $sql." AND `status` = '$status'";
         }
 
         $sql = $sql." ORDER BY a.created_at DESC";
