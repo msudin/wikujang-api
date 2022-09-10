@@ -41,7 +41,7 @@ function createAds($body) {
     }
 }
 
-function getAdsAll($status = NULL) {
+function getAdsAll($status = NULL, $limit = NULL) {
     try {
         $conn = callDb();
         $array = array();
@@ -60,7 +60,10 @@ function getAdsAll($status = NULL) {
             $sql = $sql." AND status = '$status'";
         }
 
-        $sql = $sql." ORDER BY a.created_at DESC ";
+        $sql = $sql." ORDER BY a.created_at DESC";
+        if (!empty($limit)) {
+            $sql = $sql." LIMIT $limit";
+        }
         
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) {
