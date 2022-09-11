@@ -4,13 +4,22 @@ include_once('../helper/import.php');
 try {
     clearstatcache();
     if (requestMethod() == "GET") { 
-        $dToken = headerAccessToken();
-        if ($dToken != NULL) {
+        if (empty(headerToken())) {
             $status = $_GET['status'] ?? NULL;
             $limit = $_GET['limit'] ?? NULL;
             $dAds = getAdsAll($status, $limit);
             if ($dAds->success) {
                 response(200, "record found", $dAds->data);
+            }
+        } else {
+            $dToken = headerAccessToken();
+            if ($dToken != NULL) {
+                $status = $_GET['status'] ?? NULL;
+                $limit = $_GET['limit'] ?? NULL;
+                $dAds = getAdsAll($status, $limit);
+                if ($dAds->success) {
+                    response(200, "record found", $dAds->data);
+                }
             }
         }
     } else {
