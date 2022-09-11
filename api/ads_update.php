@@ -7,8 +7,7 @@ try {
         $entityBody = file_get_contents('php://input');
         $entityData = json_decode($entityBody, true);
         if (!empty($entityBody)) {
-            $headerToken = headerToken();
-            $dToken = validateToken($headerToken);
+            $dToken = headerAccessToken();
             if (!empty($dToken)) {
                 $isSuccess = updateAds($entityData);
                 if ($isSuccess) {

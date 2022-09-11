@@ -6,11 +6,14 @@ try {
         $entityBody = file_get_contents('php://input');
         $data = json_decode($entityBody, true);
         if (!empty($entityBody)) {
-            $bodyRequest = new stdClass();
-            $bodyRequest->id = $data['productId'] ?? NULL;
-            $isSuccess = deleteProduct($bodyRequest);
-            if ($isSuccess) {
-                response(200, "Berhasil hapus menu");
+            $dToken = headerAccessToken();
+            if ($dToken != NULL) {
+                $bodyRequest = new stdClass();
+                $bodyRequest->id = $data['productId'] ?? NULL;
+                $isSuccess = deleteProduct($bodyRequest);
+                if ($isSuccess) {
+                    response(200, "Berhasil hapus menu");
+                }
             }
         } else {
             response(400);

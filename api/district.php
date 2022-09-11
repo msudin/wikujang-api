@@ -13,7 +13,7 @@ try {
             $data->name = $entity['name'];
             createDistrict($data);
         }
-        response("200", "success create district");
+        response(200, "success create district");
     } else if (requestMethod() == "GET") {
         $resultAllDistrict = new stdClass();
         if (isset($_GET['id'])) {

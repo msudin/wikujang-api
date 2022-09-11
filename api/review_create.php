@@ -6,9 +6,8 @@ try {
     if (requestMethod() == "POST") {
         $entityBody = file_get_contents('php://input');
         $data = json_decode($entityBody, true);
-        $headerToken = headerToken();
         if (!empty($entityBody)) {
-            $dToken = validateToken($headerToken);
+            $dToken = headerAccessToken();
             if ($dToken != NULL) {
                 $bodyRequest = new stdClass();
                 $bodyRequest->productId = $data['productId'] ?? "";

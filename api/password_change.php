@@ -7,8 +7,7 @@ try {
         $entityBody = file_get_contents('php://input');
         $entityData = json_decode($entityBody, true);
         if (!empty($entityBody) && !empty($entityData["new_password"])) { 
-            $headerToken = headerToken();
-            $dToken = validateToken($headerToken);
+            $dToken = headerAccessToken();
             if (!empty($dToken)) { 
                 $isSuccess = updatePassword($dToken->userId, $entityData["new_password"]);
                 if ($isSuccess) {

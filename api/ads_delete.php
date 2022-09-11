@@ -3,15 +3,18 @@ include_once('../helper/import.php');
 
 try {
     clearstatcache();
-    if (requestMethod() == "PUT") {
+    if (requestMethod() == "DELETE") {
         $entityBody = file_get_contents('php://input');
         $entityData = json_decode($entityBody, true);
         if (!empty($entityBody)) {
             $dToken = headerAccessToken();
             if (!empty($dToken)) {
-                $isSuccess = updateWarung($entityData, $dToken->warungId);
+                /// body request : 
+                // 1. id ads 
+                // 2. deleted = true
+                $isSuccess = updateAds($entityData);
                 if ($isSuccess) {
-                    response(200, "Berhasil update warung");
+                    response(200, "Berhasil hapus iklan");
                 }
             }
         } else {

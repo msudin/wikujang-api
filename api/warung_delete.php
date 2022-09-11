@@ -4,10 +4,9 @@ include_once('../helper/import.php');
 try {
     clearstatcache();
     if (requestMethod() == "DELETE") {
-        $headerToken = headerToken();
-        $dToken = validateToken($headerToken);
-        $entityData = ['deleted' => true];
+        $dToken = headerAccessToken();
         if (!empty($dToken)) {
+            $entityData = ['deleted' => true];
             $isSuccess = updateWarung($entityData, $dToken->warungId);
             if ($isSuccess) {
                 response(200, "Berhasil hapus warung");
