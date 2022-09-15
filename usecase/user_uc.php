@@ -289,12 +289,13 @@ function updateProfile($bodyRequest, $userId) {
 function getUserPhoneById($id) {
     try {
         $connn = callDb();
-        $sql = "SELECT phone FROM user WHERE user_id=$id";
+        $sql = "SELECT phone, email FROM user WHERE user_id=$id";
         $result = $connn->query($sql);
         if ($result->num_rows == 1) {
             while($row = $result->fetch_assoc()) {
                 $data = new \stdClass();
                 $data->phone = $row["phone"];
+                $data->email = $row["email"];
                 return $data;
             }
         } else {

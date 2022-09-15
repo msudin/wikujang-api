@@ -5,7 +5,6 @@ function createAds($body) {
     try {
         $conn = callDb();
         $currentDate = currentTime();
-        $id = uniqid();
 
         $sql = "INSERT INTO ads (
             `ads_id`,
@@ -16,11 +15,12 @@ function createAds($body) {
             `status`,
             `start_date`,
             `end_date`,
+            `invoice_id`,
             `created_at`,
             `updated_at`,
             `deleted_at`
             ) VALUES (
-                '$id',
+                '$body->id',
                 '$body->warungId',
                 '$body->name',
                 '$body->description',
@@ -28,6 +28,7 @@ function createAds($body) {
                 '$body->status',
                 '$body->startDate',
                 '$body->endDate',
+                '$body->invoiceId',
                 '$currentDate',
                 '$currentDate',
                 ''

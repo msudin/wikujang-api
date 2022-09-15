@@ -69,7 +69,7 @@ function getAllWarung() {
         while($row = $result->fetch_assoc()) {
             $data = new stdClass();
             $data->id = $row['warung_id'];
-            $data->userId = (int)$row['user_id'];
+            $data->userId = (int) $row['user_id'];
             $data->name = $row['name'];
             $data->description = $row['description'];
             $data->isOpen = filter_var($row['is_open'], FILTER_VALIDATE_BOOLEAN);
@@ -110,19 +110,18 @@ function getWarungByUserId($id = NULL) {
         $temp = new stdClass();
 
         if (!empty($id)) {
-            $sql = "SELECT f.file_name, w.*
+            $sql = "SELECT f.file_name, u.email AS user_email, u.phone as user_phone, w.*
             FROM `warung` w
-            LEFT JOIN `file` f ON w.image_id = f.file_id 
+            LEFT JOIN `file` f ON w.image_id = f.file_id
+            LEFT JOIN `user` u ON w.user_id  = u.user_id
             WHERE w.user_id = $id AND w.deleted_at = ''";
             $result = $conn->query($sql);
 
             while($row = $result->fetch_assoc()) {
                 $data->id = $row['warung_id'];
-                $data->userId = (int)$row['user_id'];
-                if (!empty($data->userId)) {
-                    $dProfile = getUserPhoneById($data->userId);
-                    $data->phone = $dProfile->phone;
-                }
+                $data->userId = (int) $row['user_id'];
+                $data->phone = $row['user_phone'];
+                $data->email = $row['user_email'];
                 $data->name = $row['name'];
                 $data->description = $row['description'];
                 $data->isOpen = filter_var($row['is_open'], FILTER_VALIDATE_BOOLEAN);
@@ -187,8 +186,11 @@ function updateWarungViews($warungId) {
     }
 }
 
-function getWarungById($id) {
-    updateWarungViews($id);
+function getWarungById($id, $isUpdateViews = true) {
+    if ($isUpdateViews) {
+        updateWarungViews($id);
+    }
+
     try {
         $conn = callDb();
         $data = new stdClass();
@@ -198,31 +200,36 @@ function getWarungById($id) {
         $sql = "SELECT f.file_name, w.*
         FROM `warung` w
         LEFT JOIN `file` f ON w.image_id = f.file_id WHERE warung_id = '$id'";
-        $result = $conn->query($sql);
-        
+
+        $result = $conn->query($sql);        
         while($row = $result->fetch_assoc()) {
             $data->id = $row['warung_id'];
             $data->userId = (int)$row['user_id'];
-            /// phone
+            
+            /// Phone Email
             if (!empty($data->userId)) {
                 $dProfile = getUserPhoneById($data->userId);
                 $data->phone = $dProfile->phone;
+                $data->email = $dProfile->email;
             }
+            
             $data->name = $row['name'];
             $data->description = $row['description'];
             $data->isOpen = filter_var($row['is_open'], FILTER_VALIDATE_BOOLEAN);
             $data->openTime = $row['open_time'];
             $data->closedTime = $row['closed_time'];
             $data->rating = (double) $row['rating'];
-            $data->views = (int)$row['views'];
+            $data->views = (int) $row['views'];
             $data->imageId = $row['image_id'];
             $data->imageUrl = "";
+
             /// file
             if (!empty($data->imageId)) {
                 $data->imageUrl = urlPathImage()."".$row["file_name"];
             }
             $data->address = null;
             $temp->addressId = $row['address_id'];
+
             /// address
             if (!empty($temp->addressId)) {
                 $resultAddress = getAddressDetail($temp->addressId);

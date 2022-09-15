@@ -15,6 +15,19 @@ function headerToken() {
     return $token;
 }
 
+function headerTokenXendit() {
+    $headers = getallheaders();
+    $token = "";
+    if (!empty($headers['Authorization'])) {
+        $token = $headers['Authorization'];
+    } else if (!empty($headers['authorization'])) {
+        $token = $headers['authorization'];
+    } else if (!empty($headers['x-callback-token'])) {
+        $token = $headers['x-callback-token'];
+    }
+    return $token;
+}
+
 function isEnvironmentLocal() {
     return false;
 }

@@ -18,10 +18,48 @@ try {
                     $bodyRequest->status = $data['status'] ?? "waiting_payment";
                     $bodyRequest->startDate = $data['startDate'] ?? '';
                     $bodyRequest->endDate = $data['endDate'] ?? '';
-                    
-                    $dAds = createAds($bodyRequest);
-                    if ($dAds->success) {
-                        response(200, "Berhasil tambah iklan");
+                    $bodyRequest->id = uniqid();
+
+                    $dWarung = getWarungByUserId($dToken->userId);
+                    if ($dWarung->success) {
+                        $data = $dWarung->data;
+                        $params = new stdClass();
+                        $params->externalId = $bodyRequest->id;
+                        $params->givenNames = "Warung";
+                        $params->surname = $data->name;
+                        $params->email = $data->email;
+                        $params->phone = $data->phone;
+                        $params->postalCode = $data->address->postalCode;
+                        $params->subDistrictName = $data->address->subDistrictName;
+                        $params->districtName = $data->address->districtName;
+                        $params->street = $data->address->addressDetail;
+                        $params->itemNames = $bodyRequest->name;
+                        $params->itemPrices = 50000;
+                        $params->itemCategory = "Iklan";
+
+                        $dInvoices = createInvoiceXendit($params);
+                        if ($dInvoices != NULL) {
+                            echo "success create invoices xendit";
+                            $dataI = new stdClass();
+                            $dataI->id = $dInvoices->id;
+                            $dataI->amount = $params->itemPrices;
+                            $dataI->fees = 5000;
+                            $dataI->status = $dInvoices->status;
+                            $dataI->invoiceUrl = $dInvoices->invoice_url;
+                            $dataI->expiryAt = $dInvoices->expiry_date;
+
+                            $dCreateInvoice = createInvoiceDb($dataI);
+                            if ($dCreateInvoice->success) {
+                                /// ------- Insert ads to DB
+                                $bodyRequest->invoiceId = $dInvoices->id;
+                                $dAds = createAds($bodyRequest);
+                                if ($dAds->success) {
+                                    response(200, "Berhasil pengajuan iklan");
+                                }
+                            }
+                        } else {
+                            response(400, "Gagal pengajuan iklan");
+                        }
                     }
                 } else {
                     response(400, "Silahkan buka warung terlebih dahulu");
