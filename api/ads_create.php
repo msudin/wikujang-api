@@ -15,7 +15,7 @@ try {
                     $bodyRequest->name = $data['name'] ?? "";
                     $bodyRequest->description = $data['description'] ?? "";
                     $bodyRequest->imageId = $data['imageId'] ?? "";
-                    $bodyRequest->status = $data['status'] ?? "waiting_payment";
+                    $bodyRequest->status = $data['status'] ?? "inactive";
                     $bodyRequest->startDate = $data['startDate'] ?? '';
                     $bodyRequest->endDate = $data['endDate'] ?? '';
                     $bodyRequest->id = uniqid();
