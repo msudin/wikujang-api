@@ -42,7 +42,7 @@ function createAds($body) {
     }
 }
 
-function getAdsAll($status = NULL, $limit = NULL) {
+function getAdsAll($status = NULL, $limit = NULL, $paymentStatus = NULL) {
     try {
         $conn = callDb();
         $array = array();
@@ -50,14 +50,20 @@ function getAdsAll($status = NULL, $limit = NULL) {
         $sql = "SELECT 
         f.file_name,
         w.name as warung_name,
+        i.status as payment_status,
         a.*
         FROM `ads` a
         LEFT JOIN `file` f ON a.image_id = f.file_id 
         LEFT JOIN `warung` w ON a.warung_id = w.warung_id
+        LEFT JOIN `invoice` i ON a.invoice_id = i.invoice_id
         WHERE (a.deleted_at = '' OR w.deleted_at = '')";
 
         if (!empty($status)) {
-            $sql = $sql." AND `status`='$status'";
+            $sql = $sql." AND a.status = '$status'";
+        }
+
+        if (!empty($paymentStatus)) {
+            $sql = $sql." AND i.status = '$paymentStatus'";
         }
 
         $sql = $sql." ORDER BY a.created_at DESC";
@@ -72,10 +78,12 @@ function getAdsAll($status = NULL, $limit = NULL) {
             $data->name = $row['name'];
             $data->description = $row['description'];
             $data->status = $row['status'];
+            $data->paymentStatus = $row['payment_status'];
             $data->startDate = $row['start_date'];
             $data->endDate = $row['end_date'];
             $data->imageId = $row['image_id'];
             $data->imageUrl = "";
+            
             if (!empty($row['file_name'])) {
                 $data->imageUrl = urlPathImage()."".$row["file_name"];
             }

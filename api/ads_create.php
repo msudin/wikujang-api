@@ -25,7 +25,7 @@ try {
                         $data = $dWarung->data;
                         $params = new stdClass();
                         $params->externalId = $bodyRequest->id;
-                        $params->givenNames = "Warung";
+                        $params->givenNames = $data->name;
                         $params->surname = $data->name;
                         $params->email = $data->email;
                         $params->phone = $data->phone;
@@ -39,7 +39,6 @@ try {
 
                         $dInvoices = createInvoiceXendit($params);
                         if ($dInvoices != NULL) {
-                            echo "success create invoices xendit";
                             $dataI = new stdClass();
                             $dataI->id = $dInvoices->id;
                             $dataI->amount = $params->itemPrices;
@@ -54,7 +53,7 @@ try {
                                 $bodyRequest->invoiceId = $dInvoices->id;
                                 $dAds = createAds($bodyRequest);
                                 if ($dAds->success) {
-                                    response(200, "Berhasil pengajuan iklan");
+                                    response(200, "Berhasil pengajuan iklan", $dataI);
                                 }
                             }
                         } else {
