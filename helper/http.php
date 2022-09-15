@@ -22,8 +22,8 @@ function headerTokenXendit() {
         $token = $headers['Authorization'];
     } else if (!empty($headers['authorization'])) {
         $token = $headers['authorization'];
-    } else if (!empty($headers['x-callback-token'])) {
-        $token = $headers['x-callback-token'];
+    } else if (!empty($headers[' X-CALLBACK-TOKEN'])) {
+        $token = $headers[' X-CALLBACK-TOKEN'];
     }
     return $token;
 }
