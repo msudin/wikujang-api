@@ -4,7 +4,7 @@ include_once('../helper/import.php');
 try {
     clearstatcache();
     if(requestMethod() == "POST") {
-        $dToken = validateToken(headerToken());
+        $dToken = headerAccessToken();
         if ($dToken != NULL) {
             if(isset($_FILES["file"]) && $_FILES["file"]["error"] == 0 && isset($_POST["type"])) {
                 $typeImage = $_POST["type"];

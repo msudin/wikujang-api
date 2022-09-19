@@ -78,12 +78,12 @@ function getAdsAll($status = NULL, $limit = NULL, $paymentStatus = NULL) {
             $data->name = $row['name'];
             $data->description = $row['description'];
             $data->status = $row['status'];
-            $data->paymentStatus = $row['payment_status'];
+            $data->paymentStatus = "";
+            $data->paymentStatus = $row['payment_status'] ?? "";
             $data->startDate = $row['start_date'];
             $data->endDate = $row['end_date'];
             $data->imageId = $row['image_id'];
             $data->imageUrl = "";
-            
             if (!empty($row['file_name'])) {
                 $data->imageUrl = urlPathImage()."".$row["file_name"];
             }
