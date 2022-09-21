@@ -15,7 +15,7 @@ try {
         } else {
             $dToken = headerAccessToken();
             if ($dToken != NULL) {
-                $dAds = getAdsAll($status, $limit, $paymentStatus);
+                $dAds = getAdsAll($status, $limit, $paymentStatus, $dToken->warungId);
                 if ($dAds->success) {
                     response(200, "record found", $dAds->data);
                 }

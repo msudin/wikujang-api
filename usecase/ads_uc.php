@@ -42,69 +42,87 @@ function createAds($body) {
     }
 }
 
-function getAdsAll($status = NULL, $limit = NULL, $paymentStatus = NULL) {
-    try {
-        $conn = callDb();
-        $array = array();
+function getAdsAll(
+    $status = NULL, 
+    $limit = NULL, 
+    $paymentStatus = NULL, 
+    $warungId = NULL
+    ) {
+        try {
+            $conn = callDb();
+            $array = array();
 
-        $sql = "SELECT 
-        f.file_name,
-        w.name as warung_name,
-        i.status as payment_status,
-        a.*
-        FROM `ads` a
-        LEFT JOIN `file` f ON a.image_id = f.file_id 
-        LEFT JOIN `warung` w ON a.warung_id = w.warung_id
-        LEFT JOIN `invoice` i ON a.invoice_id = i.invoice_id
-        WHERE (a.deleted_at = '' OR w.deleted_at = '')";
+            $sql = "SELECT 
+            f.file_name,
+            w.name as warung_name,
+            i.status as payment_status,
+            i.expiry_at as payment_expired,
+            I.payment_date as payment_date,
+            a.*
+            FROM `ads` a
+            LEFT JOIN `file` f ON a.image_id = f.file_id 
+            LEFT JOIN `warung` w ON a.warung_id = w.warung_id
+            LEFT JOIN `invoice` i ON a.invoice_id = i.invoice_id
+            WHERE (a.deleted_at = '' OR w.deleted_at = '')";
 
-        if (!empty($status)) {
-            $sql = $sql." AND a.status = '$status'";
-        }
-
-        if (!empty($paymentStatus)) {
-            $sql = $sql." AND i.status = '$paymentStatus'";
-        }
-
-        $sql = $sql." ORDER BY a.created_at DESC";
-        if (!empty($limit)) {
-            $sql = $sql." LIMIT $limit";
-        }
-        
-        $result = $conn->query($sql);
-        while($row = $result->fetch_assoc()) {
-            $data = new stdClass();
-            $data->id = $row['ads_id'];
-            $data->name = $row['name'];
-            $data->description = $row['description'];
-            $data->status = $row['status'];
-            $data->paymentStatus = "";
-            $data->paymentStatus = $row['payment_status'] ?? "";
-            $data->startDate = $row['start_date'];
-            $data->endDate = $row['end_date'];
-            $data->imageId = $row['image_id'];
-            $data->imageUrl = "";
-            if (!empty($row['file_name'])) {
-                $data->imageUrl = urlPathImage()."".$row["file_name"];
+            if (!empty($status)) {
+                $sql = $sql." AND a.status = '$status'";
             }
-            $data->warung = NULL;
-            if (!empty($row['warung_id'])) {
-                $warung = new stdClass();
-                $warung->id = $row['warung_id'];
-                $warung->name = $row['warung_name'];
-                $data->warung = $warung;
+
+            if (!empty($paymentStatus)) {
+                if (strtolower($paymentStatus) == "paid" || strtolower($paymentStatus) == "settled") {
+                    $sql = $sql." AND i.status = 'PAID' OR i.status = 'SETTLED'";    
+                } else {
+                    $statusPay = strtoupper($paymentStatus);
+                    $sql = $sql." AND i.status = '$statusPay'";
+                }
             }
-            $data->createdAt = $row['created_at'];
-            $data->updatedAt = $row['updated_at'];
-            $data->deletedAt = $row['deleted_at'];
-            array_push($array, $data);
+
+            if (!empty($warungId)) {
+                $sql = $sql." AND a.warung_id = '$warungId'";
+            }
+
+            $sql = $sql." ORDER BY a.created_at DESC";
+            if (!empty($limit)) {
+                $sql = $sql." LIMIT $limit";
+            }
+            
+            $result = $conn->query($sql);
+            while($row = $result->fetch_assoc()) {
+                $data = new stdClass();
+                $data->id = $row['ads_id'];
+                $data->name = $row['name'];
+                $data->description = $row['description'];
+                $data->status = $row['status'];
+                $data->paymentStatus = "";
+                $data->paymentStatus = $row['payment_status'] ?? "";
+                $data->paymentExpired = $row['payment_expired'] ?? "";
+                $data->paymentDate = $row['payment_date'] ?? "";
+                $data->startDate = $row['start_date'];
+                $data->endDate = $row['end_date'];
+                $data->imageId = $row['image_id'];
+                $data->imageUrl = "";
+                if (!empty($row['file_name'])) {
+                    $data->imageUrl = urlPathImage()."".$row["file_name"];
+                }
+                $data->warung = NULL;
+                if (!empty($row['warung_id'])) {
+                    $warung = new stdClass();
+                    $warung->id = $row['warung_id'];
+                    $warung->name = $row['warung_name'];
+                    $data->warung = $warung;
+                }
+                $data->createdAt = $row['created_at'];
+                $data->updatedAt = $row['updated_at'];
+                $data->deletedAt = $row['deleted_at'];
+                array_push($array, $data);
+            }
+            return resultBody(true, $array);
+        } catch (Exception $e) {
+            $error = $e->getMessage();
+            response(500, $error);
+            return resultBody();
         }
-        return resultBody(true, $array);
-    } catch (Exception $e) {
-        $error = $e->getMessage();
-        response(500, $error);
-        return resultBody();
-    }
 }
 
 function updateAds($bodyRequest) {
