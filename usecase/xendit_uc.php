@@ -20,7 +20,7 @@ function createInvoiceXendit($params) {
     $body = array(
         "external_id" => "payment-link-".$params->externalId,
         "amount" => $amount,
-        "description" => "Invoice #".$params->externalId,
+        "description" => "Invoice ".$params->itemNames,
         "invoice_duration" => 86400,
         "customer" => array(
             "given_names" => $params->givenNames,
@@ -39,10 +39,10 @@ function createInvoiceXendit($params) {
             )    
         ),
         "customer_notification_preference" => array(
-            "invoice_created" => array("email"),
-            "invoice_reminder" => array("email"),
-            "invoice_paid" => array("email"),
-            "invoice_expired" => array("email")
+            "invoice_created" => array("whatsapp", "email"),
+            "invoice_reminder" => array("whatsapp", "email"),
+            "invoice_paid" => array("whatsapp", "email"),
+            "invoice_expired" => array("whatsapp", "email")
         ),
         "locale" => "id",
         "payment_methods" => array(

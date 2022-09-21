@@ -57,7 +57,12 @@ function getAdsAll(
             w.name as warung_name,
             i.status as payment_status,
             i.expiry_at as payment_expired,
-            I.payment_date as payment_date,
+            i.payment_date,
+            i.payment_method,
+            i.payment_channel,
+            i.invoice_url,
+            i.amount,
+            i.fees,
             a.*
             FROM `ads` a
             LEFT JOIN `file` f ON a.image_id = f.file_id 
@@ -94,10 +99,6 @@ function getAdsAll(
                 $data->name = $row['name'];
                 $data->description = $row['description'];
                 $data->status = $row['status'];
-                $data->paymentStatus = "";
-                $data->paymentStatus = $row['payment_status'] ?? "";
-                $data->paymentExpired = $row['payment_expired'] ?? "";
-                $data->paymentDate = $row['payment_date'] ?? "";
                 $data->startDate = $row['start_date'];
                 $data->endDate = $row['end_date'];
                 $data->imageId = $row['image_id'];
@@ -112,12 +113,97 @@ function getAdsAll(
                     $warung->name = $row['warung_name'];
                     $data->warung = $warung;
                 }
+
+                /// payment invoice
+                $payment = new stdClass();
+                $payment->id = $row['invoice_id'];
+                $payment->amount = (int) $row['amount'];
+                $payment->fees = (int) $row['fees'];
+                $payment->status = $row['payment_status'] ?? "";
+                $payment->url = $row['invoice_url'] ?? "";
+                $payment->method = $row['payment_method'] ?? "";
+                $payment->channel = $row['payment_channel'] ?? "";
+                $payment->paymentDate = $row['payment_date'] ?? "";
+                $payment->paymentExpired = $row['payment_expired'] ?? "";
+                $data->invoice = $payment;
+
                 $data->createdAt = $row['created_at'];
                 $data->updatedAt = $row['updated_at'];
                 $data->deletedAt = $row['deleted_at'];
                 array_push($array, $data);
             }
             return resultBody(true, $array);
+        } catch (Exception $e) {
+            $error = $e->getMessage();
+            response(500, $error);
+            return resultBody();
+        }
+}
+
+function getAdsDetail(
+    $id = NULL
+    ) {
+        try {
+            $conn = callDb();
+
+            $sql = "SELECT 
+            f.file_name,
+            w.name as warung_name,
+            i.status as payment_status,
+            i.expiry_at as payment_expired,
+            i.payment_date,
+            i.payment_method,
+            i.payment_channel,
+            i.invoice_url,
+            i.amount,
+            i.fees,
+            a.*
+            FROM `ads` a
+            LEFT JOIN `file` f ON a.image_id = f.file_id 
+            LEFT JOIN `warung` w ON a.warung_id = w.warung_id
+            LEFT JOIN `invoice` i ON a.invoice_id = i.invoice_id
+            WHERE ads_id = '$id'";
+            
+            $result = $conn->query($sql);
+            while($row = $result->fetch_assoc()) {
+                $data = new stdClass();
+                $data->id = $row['ads_id'];
+                $data->name = $row['name'];
+                $data->description = $row['description'];
+                $data->status = $row['status'];
+                $data->startDate = $row['start_date'];
+                $data->endDate = $row['end_date'];
+                $data->imageId = $row['image_id'];
+                $data->imageUrl = "";
+                if (!empty($row['file_name'])) {
+                    $data->imageUrl = urlPathImage()."".$row["file_name"];
+                }
+                $data->warung = NULL;
+                if (!empty($row['warung_id'])) {
+                    $warung = new stdClass();
+                    $warung->id = $row['warung_id'];
+                    $warung->name = $row['warung_name'];
+                    $data->warung = $warung;
+                }
+
+                /// payment invoice
+                $payment = new stdClass();
+                $payment->id = $row['invoice_id'];
+                $payment->amount = (int) $row['amount'];
+                $payment->fees = (int) $row['fees'];
+                $payment->status = $row['payment_status'] ?? "";
+                $payment->url = $row['invoice_url'];
+                $payment->method = $row['payment_method'] ?? "";
+                $payment->channel = $row['payment_channel'] ?? "";
+                $payment->paymentDate = $row['payment_date'] ?? "";
+                $payment->paymentExpired = $row['payment_expired'] ?? "";
+                $data->invoice = $payment;
+
+                $data->createdAt = $row['created_at'];
+                $data->updatedAt = $row['updated_at'];
+                $data->deletedAt = $row['deleted_at'];
+                return resultBody(true, $data);
+            }
         } catch (Exception $e) {
             $error = $e->getMessage();
             response(500, $error);
