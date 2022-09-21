@@ -39,10 +39,10 @@ function createInvoiceXendit($params) {
             )    
         ),
         "customer_notification_preference" => array(
-            "invoice_created" => array("whatsapp", "email"),
-            "invoice_reminder" => array("whatsapp", "email"),
-            "invoice_paid" => array("whatsapp", "email"),
-            "invoice_expired" => array("whatsapp", "email")
+            "invoice_created" => array("whatsapp"),
+            "invoice_reminder" => array("whatsapp"),
+            "invoice_paid" => array("whatsapp"),
+            "invoice_expired" => array("whatsapp")
         ),
         "locale" => "id",
         "payment_methods" => array(
