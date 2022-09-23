@@ -68,7 +68,7 @@ function getAdsAll(
             LEFT JOIN `file` f ON a.image_id = f.file_id 
             LEFT JOIN `warung` w ON a.warung_id = w.warung_id
             LEFT JOIN `invoice` i ON a.invoice_id = i.invoice_id
-            WHERE (a.deleted_at = '' OR w.deleted_at = '')";
+            WHERE (a.deleted_at = '' AND w.deleted_at = '')";
 
             if (!empty($status)) {
                 $sql = $sql." AND a.status = '$status'";
@@ -286,7 +286,7 @@ function adsRevenue($paymentDate = NULL, $paymentStatus = NULL) {
         }
 
         $sql = $sql." ORDER BY created_at DESC";
-        
+
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) {
             $data = new stdClass();
