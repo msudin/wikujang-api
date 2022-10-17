@@ -77,13 +77,7 @@ function getUserById(
     try {
         $connn = callDb();
         $server_url = urlPathImage();
-
-        // $sql = "SELECT f.file_name, f.type, ad.address_id, ad.subdistrict_id, ad.district_id, ad.address_detail, u.* 
-        // FROM `user` u 
-        // LEFT JOIN `file` f ON u.image_id = f.file_id 
-        // LEFT JOIN `address` ad ON u.address_id = ad.address_id 
-        // WHERE u.user_id=$userId";
-
+        
         $sql = "SELECT";
         if ($showProfileImage) {
             $sql = $sql." f.file_name, f.type,";

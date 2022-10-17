@@ -62,6 +62,7 @@ function getAdsAll(
             i.payment_channel,
             i.invoice_url,
             i.amount,
+            i.booking,
             i.fees,
             a.*
             FROM `ads` a
@@ -119,6 +120,7 @@ function getAdsAll(
                 $payment->id = $row['invoice_id'];
                 $payment->amount = (int) $row['amount'];
                 $payment->fees = (int) $row['fees'];
+                $payment->booking = (int) $row['booking'];
                 $payment->status = $row['payment_status'] ?? "";
                 $payment->url = $row['invoice_url'] ?? "";
                 $payment->method = $row['payment_method'] ?? "";
@@ -156,6 +158,7 @@ function getAdsDetail(
             i.payment_channel,
             i.invoice_url,
             i.amount,
+            i.booking,
             i.fees,
             a.*
             FROM `ads` a
@@ -191,6 +194,7 @@ function getAdsDetail(
                 $payment->id = $row['invoice_id'];
                 $payment->amount = (int) $row['amount'];
                 $payment->fees = (int) $row['fees'];
+                $payment->booking = (int) $row['booking'];
                 $payment->status = $row['payment_status'] ?? "";
                 $payment->url = $row['invoice_url'];
                 $payment->method = $row['payment_method'] ?? "";
@@ -286,7 +290,6 @@ function adsRevenue($paymentDate = NULL, $paymentStatus = NULL) {
         }
 
         $sql = $sql." ORDER BY created_at DESC";
-
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) {
             $data = new stdClass();

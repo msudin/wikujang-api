@@ -43,6 +43,7 @@ try {
                             $dataI->id = $dInvoices->id;
                             $dataI->amount = $params->itemPrices;
                             $dataI->fees = 5000;
+                            $dataI->booking = 0;
                             $dataI->status = $dInvoices->status;
                             $dataI->invoiceUrl = $dInvoices->invoice_url;
                             $dataI->expiryAt = $dInvoices->expiry_date;
