@@ -156,9 +156,7 @@ function getBookingAll(
         }
 }
 
-function getBookingDetail(
-    $id = NULL
-    ) {
+function getBookingDetail($id = NULL) {
         try {
             $conn = callDb();
 
@@ -226,5 +224,79 @@ function getBookingDetail(
             response(500, $error);
             return resultBody();
         }
+}
+
+function updateBooking($bodyRequest) {
+    try {
+        clearstatcache();
+        $conn = callDb();
+        $updatedAt = currentTime();
+        $bookingId = $bodyRequest['id'] ?? '';
+
+        $sql = "UPDATE booking SET `updated_at` = '$updatedAt'";
+        
+        if (!empty($bodyRequest['userId'])) {
+            $userId = $bodyRequest['userId'];
+            $sql = $sql.", `user_id` = '$userId'";
+        }
+
+        if (!empty($bodyRequest['warungId'])) { 
+            $warungId = $bodyRequest['warungId'];
+            $sql = $sql.", `warung_id` = '$warungId'";
+        }
+
+        if (!empty($bodyRequest['invoiceId'])) { 
+            $invoiceId = $bodyRequest['invoiceId'];
+            $sql = $sql.", `invoice_id` = '$invoiceId'";
+        }
+
+        if (!empty($bodyRequest['dpAmount'])) { 
+            $dpAmount = $bodyRequest['dpAmount'];
+            $sql = $sql.", `dp_amount` = '$dpAmount'";
+        }
+
+        if (!empty($bodyRequest['status'])) {
+            $status = $bodyRequest['status'];
+            $sql = $sql.", `status` = '$status'";
+        }
+
+        if (!empty($bodyRequest['date'])) {
+            $date = $bodyRequest['date'];
+            $sql = $sql.", `date` = '$date'";
+        }
+
+        if (!empty($bodyRequest['time'])) {
+            $time = $bodyRequest['time'];
+            $sql = $sql.", `time` = '$time'";
+        }
+
+        if (!empty($bodyRequest['reason'])) {
+            $reason = $bodyRequest['reason'];
+            $sql = $sql.", `reason` = '$reason'";
+        }
+
+        if (!empty($bodyRequest['person'])) {
+            $person = $bodyRequest['person'];
+            $sql = $sql.", `person` = '$person'";
+        }
+
+        /// QUERY DELETE BOOKING
+        if (!empty($bodyRequest['deleted']) && $bodyRequest['deleted'] == 'true') {
+            $sql = $sql.", `deleted_at` = '$updatedAt'";
+        }
+
+        /// QUERY RE-ACTIVATE BOOKING
+        if (!empty($bodyRequest['activated']) && $bodyRequest['activated'] == 'true' ) {
+            $sql = $sql.", `deleted_at` = ''";
+        }
+
+        $sql = $sql." WHERE `booking_id`= '$bookingId'";
+        $conn->query($sql);
+        return true;
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        response(500, $error);
+        return false;
+    }
 }
 ?>

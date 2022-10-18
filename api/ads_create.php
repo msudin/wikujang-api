@@ -36,6 +36,15 @@ try {
                         $params->itemNames = $bodyRequest->name;
                         $params->itemPrices = 50000;
                         $params->itemCategory = "Iklan";
+                        $params->invoiceDuration = 86400;
+
+                        $params->amountBilling = ((int) $params->itemPrices) + 5000;
+                        $params->fees = array(
+                            array(
+                                "type" => "Admin Iklan",
+                                "value" => 5000
+                            )
+                        );
 
                         $dInvoices = createInvoiceXendit($params);
                         if ($dInvoices != NULL) {

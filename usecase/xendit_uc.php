@@ -15,13 +15,14 @@ function createInvoiceXendit($params) {
     // 10. Items Names [itemNames]
     // 11. Items Prices [itemPrices]
     // 12. Items Category [itemCategory]
+    // 13. Amount Billing [amountBilling]
+    // 14. Invoice Duration  [invoiceDuration]
 
-    $amount = ((int) $params->itemPrices) + 5000;
     $body = array(
         "external_id" => "payment-link-".$params->externalId,
-        "amount" => $amount,
+        "amount" => $params->amountBilling,
         "description" => "Invoice ".$params->itemNames,
-        "invoice_duration" => 86400,
+        "invoice_duration" => $params->invoiceDuration,
         "customer" => array(
             "given_names" => $params->givenNames,
             "surname" => $params->surname,
@@ -70,12 +71,7 @@ function createInvoiceXendit($params) {
                 "url" => "https://wikujang.site/images/79c914ad211a850f81306d54f071a7ee.jpeg"
             )
         ),
-        "fees" => array(
-            array(
-                "type" => "ADMIN",
-                "value" => 5000
-            )
-        )
+        "fees" => $params->fees
     );
 
     $baseUrl = "https://api.xendit.co/v2/invoices";
