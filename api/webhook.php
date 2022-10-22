@@ -8,7 +8,14 @@ try {
         if (!empty($entityBody)) {
             $dInvoice = updateInvoiceDb($data);
             if ($dInvoice == true) {
-                response(200, "Berhasil update invoice");
+                if (strtolower($data['status']) == 'paid' &&  strtolower(((reset($data['fees']))['type'])) == 'admin booking') {
+                    $dRequest = webhookBookingHandler($data);
+                    if ($dRequest->success) {
+                        response(200, "success update data & created mutasi history");
+                    }
+                } else {
+                    response(200, "success update data");
+                }
             }
         } else {
             response(400);

@@ -29,7 +29,7 @@ function headerTokenXendit() {
 }
 
 function isEnvironmentLocal() {
-    return false;
+    return true;
 }
 
 function serverName() {
@@ -54,7 +54,7 @@ function serverDbPassword() {
 
 function serverDbName() {
     if (isEnvironmentLocal()) { 
-        return "wikujang_db";
+        return "wikujangdb";
     } else {
         return "wiks7958_wikujang";
     }
@@ -62,7 +62,7 @@ function serverDbName() {
 
 function urlPathImage() {
     if (isEnvironmentLocal()) {
-        return "http://192.168.68.102:8888/wikujang-api/"."uploads/"; 
+        return "http://192.168.68.249:8888/wikujang-api/"."uploads/"; 
     } else {
         return "https://wikujang.site/apiv1/uploads/";
     }
