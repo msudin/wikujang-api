@@ -49,7 +49,8 @@ function getBookingAll(
     $limit = NULL, 
     $paymentStatus = NULL, 
     $warungId = NULL,
-    $userId = NULL
+    $userId = NULL,
+    $bookingDate = NULL
     ) {
         try {
             $conn = callDb();
@@ -77,6 +78,10 @@ function getBookingAll(
 
             if (!empty($status)) {
                 $sql = $sql." AND b.status = '$status'";
+            }
+
+            if (!empty($bookingDate)) {
+                $sql = $sql." AND b.date = '$bookingDate'";
             }
 
             if (!empty($paymentStatus)) {
@@ -123,7 +128,7 @@ function getBookingAll(
                 $data->user = NULL;
                 if (!empty($row['user_id'])) {
                     $user = new stdClass();
-                    $user->id = $row['user_id'];
+                    $user->id = (int) $row['user_id'];
                     $user->fullName = $row['user_fullname'];
                     $user->phone = $row['user_phone'];
                     $data->user = $user;
@@ -207,7 +212,7 @@ function getBookingDetail($id = NULL) {
                 $payment->fees = (int) $row['fees'];
                 $payment->booking = (int) $row['booking'];
                 $payment->status = $row['payment_status'] ?? "";
-                $payment->url = $row['invoice_url'];
+                $payment->url = $row['invoice_url'] ?? "";
                 $payment->method = $row['payment_method'] ?? "";
                 $payment->channel = $row['payment_channel'] ?? "";
                 $payment->paymentDate = $row['payment_date'] ?? "";

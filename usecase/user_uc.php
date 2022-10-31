@@ -44,18 +44,24 @@ function createUserRegister($bodyRequest) {
 function getUserByPhone($phone) {
     try {
         $connn = callDb();
-        $sql = "SELECT * FROM user WHERE phone=$phone";
+        $sql = "SELECT 
+        w.warung_id, 
+        u.* 
+        FROM `user` u
+        LEFT JOIN `warung` w on u.user_id = w.user_id
+        WHERE u.phone = $phone";
         $result = $connn->query($sql);
         if ($result->num_rows == 1) {
             while($row = $result->fetch_assoc()) {
                 $data = new \stdClass();
-                $data->id = (int)$row["user_id"];
-                $data->phone = $row["phone"];
-                $data->password = $row["password"];
+                $data->id = (int) $row["user_id"] ?? "0";
+                $data->warungId = $row["warung_id"] ?? "";
+                $data->phone = $row["phone"] ?? "";
+                $data->password = $row["password"] ?? "";
                 $data->isActive = filter_var($row['active'], FILTER_VALIDATE_BOOLEAN);
-                $data->role = $row['role'];
-                $data->fullName = $row['fullname'];
-                $data->userName = $row['username'];
+                $data->role = $row['role'] ?? "";
+                $data->fullName = $row['fullname'] ?? "";
+                $data->userName = $row['username'] ?? "";
                 return $data;
             }
         } else {

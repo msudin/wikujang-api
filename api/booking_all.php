@@ -8,19 +8,20 @@ try {
         $limit = $_GET['limit'] ?? NULL;
         $typeAccess = $_GET['type_access'] ?? "me";
         $paymentStatus = $_GET['paymentStatus'] ?? NULL;
+        $bookingDate = $_GET['bookingDate'] ?? NULL;
 
         if (empty(headerToken())) {
             $dBookings = getBookingAll($status, $limit, $paymentStatus);
-            if ($dAds->success) {
+            if ($dBookings->success) {
                 response(200, "record found", $dBookings->data);
             }
         } else {
             $dToken = headerAccessToken();
             if ($dToken != NULL) {
                 if ($typeAccess == "warung") {
-                    $dBookings = getBookingAll($status, $limit, $paymentStatus, $dToken->warungId);
+                    $dBookings = getBookingAll($status, $limit, $paymentStatus, $dToken->warungId, NULL, $bookingDate);
                 } else {
-                    $dBookings = getBookingAll($status, $limit, $paymentStatus, NULL, $dToken->userId);
+                    $dBookings = getBookingAll($status, $limit, $paymentStatus, NULL, $dToken->userId, $bookingDate);
                 }
                 if ($dBookings->success) {
                     response(200, "record found", $dBookings->data);

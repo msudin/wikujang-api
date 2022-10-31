@@ -14,6 +14,7 @@ try {
                     if ($dToken != NULL) {
                         $dLogin = new stdClass();
                         $dLogin->userId = $dUser->id;
+                        $dLogin->warungId = $dUser->warungId;
                         $dLogin->isActive = $dUser->isActive;
                         $dLogin->role = $dUser->role;
                         $dLogin->fullName = $dUser->fullName;

@@ -5,7 +5,7 @@ try {
     clearstatcache();
     if (requestMethod() == "GET") { 
         $resultWarung = getAllWarung();
-        if ($resultWarung->success == true) {
+        if ($resultWarung->success) {
             response(200, "record found", $resultWarung->data);
         }
     } else {

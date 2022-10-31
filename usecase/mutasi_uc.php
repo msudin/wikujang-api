@@ -100,8 +100,8 @@ function getBalance($warungId) {
         while($row = $result->fetch_assoc()) {
             $data = new stdClass();
             $data->totalDebit = (int) $row['total_debit'];
-            $data->totalKredit = (int) $row['total_kredit'];
-            $data->balance = $data->totalKredit - $data->totalDebit;
+            $data->totalCredit = (int) $row['total_kredit'];
+            $data->totalBalance = (int) ($data->totalCredit - $data->totalDebit) ?? 0;
             return resultBody(true, $data);
         }
     } catch (Exception $e) {
@@ -109,5 +109,49 @@ function getBalance($warungId) {
         response(500, $error);
         return resultBody();
     }
+}
+
+
+function getListBalance(
+    $warungId,
+    $date = NULL
+    ) {
+        try {
+            $conn = callDb();
+            $array = array();
+            
+            $sql = "SELECT * 
+            FROM `mutasibooking`
+            WHERE warung_id = '$warungId'";
+
+            if (!empty($date)) {
+                $sql = $sql." AND `created_at` LIKE '%$date%'";
+            }
+
+            $result = $conn->query($sql);
+            while($row = $result->fetch_assoc()) {
+                $data = new stdClass();
+                $data->id = $row['mutasi_id'] ?? "";
+                $data->bookingId = $row['booking_id'] ?? "";
+                $data->userId = (int) $row['user_id'] ?? "0";
+                $data->warungId = $row['warung_id'] ?? "";
+                $data->credit = (int) $row['kredit'] ?? "0";
+                $data->debit = (int) $row['debit'] ?? "0";
+                $data->type = $row['type'] ?? "";
+                $data->status = $row['status'] ?? "";
+                $data->bankAccNumber = $row['bank_acc_number'] ?? "";
+                $data->bankAccName = $row['bank_acc_name'] ?? "";
+                $data->bankUserName = $row['bank_user_name'] ?? "";
+                $data->createdAt = $row['created_at'] ?? "";
+                $data->updatedAt = $row['updated_at'] ?? "";
+                $data->deletedAt = $row['deleted_at'] ?? "";
+                array_push($array, $data);
+            }
+            return resultBody(true, $array);
+        } catch (Exception $e) {
+            $error = $e->getMessage();
+            response(500, $error);
+            return resultBody();
+        }
 }
 ?>
