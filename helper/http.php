@@ -29,7 +29,7 @@ function headerTokenXendit() {
 }
 
 function isEnvironmentLocal() {
-    return true;
+    return false;
 }
 
 function serverName() {
