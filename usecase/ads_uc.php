@@ -55,6 +55,7 @@ function getAdsAll(
             $sql = "SELECT 
             f.file_name,
             w.name as warung_name,
+            w.rating as warung_rating,
             i.status as payment_status,
             i.expiry_at as payment_expired,
             i.payment_date,
@@ -112,6 +113,11 @@ function getAdsAll(
                     $warung = new stdClass();
                     $warung->id = $row['warung_id'];
                     $warung->name = $row['warung_name'];
+                    $warung->rating = (double) $row['warung_rating'];
+                    $dRatingWarung = getAverageRatingWarung($warung->id);
+                    if ($dRatingWarung->success) {
+                        $warung->rating = $dRatingWarung->data;
+                    }
                     $data->warung = $warung;
                 }
 
