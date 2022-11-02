@@ -93,8 +93,7 @@ function getBalance($warungId) {
         SUM(debit) as total_debit, 
         SUM(kredit) as total_kredit 
         FROM `mutasibooking`
-        WHERE warung_id = '$warungId'
-        ";
+        WHERE warung_id = '$warungId'";
 
         $result = $conn->query($sql);
         while($row = $result->fetch_assoc()) {
@@ -127,6 +126,8 @@ function getListBalance(
             if (!empty($date)) {
                 $sql = $sql." AND `created_at` LIKE '%$date%'";
             }
+
+            $sql = $sql." ORDER BY created_at DESC";
 
             $result = $conn->query($sql);
             while($row = $result->fetch_assoc()) {
