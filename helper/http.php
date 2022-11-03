@@ -28,6 +28,15 @@ function headerTokenXendit() {
     return $token;
 }
 
+function callbackTokenXendit() {
+    // xnd_development_vBVLCboqRpxJwBdTPf7tFxIW6jQAHZUhPfCZxMcPRysgTSkJ7WBMy2g4re4NXe
+    if (isEnvironmentLocal()) {
+        return "ZetzaBntVcTTwB7KXyR75DJXd8zXMlD453noDHKPAwsesVRf";
+    } else {
+        return "igcdkz9PsGhoovNqAXHUBoXOSwFIJpToREm2RtKw3WcR3lfR";
+    }
+}
+
 function isEnvironmentLocal() {
     return false;
 }

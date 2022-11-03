@@ -1,8 +1,9 @@
 <?php
 include_once('../helper/import.php');
+
 try {
     clearstatcache();
-    if (headerTokenXendit() == "ZetzaBntVcTTwB7KXyR75DJXd8zXMlD453noDHKPAwsesVRf") {
+    if (headerTokenXendit() == callbackTokenXendit()) {
         $entityBody = file_get_contents('php://input');
         $data = json_decode($entityBody, true);
         if (!empty($entityBody)) {

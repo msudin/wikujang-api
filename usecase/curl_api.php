@@ -23,9 +23,16 @@ function callAPI($method, $url, $data) {
    curl_setopt($curl, CURLOPT_URL, $url);
    curl_setopt($curl, CURLOPT_FAILONERROR, true);
    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+   if (isEnvironmentLocal()) { 
    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
       'Authorization: Basic eG5kX2RldmVsb3BtZW50X3g3dFgxVWp2eUNJVzd5aVhycDJEWk1KWG9JWDJRUnRvWmZKWnRZaU14Z05RMXhHMXQxVjZpY1lhbHJvQ3VCOg==',
       'Content-Type: application/json'));
+   } else {
+      curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+         'Authorization: Basic eG5kX2RldmVsb3BtZW50X3ZCVkxDYm9xUnB4SndCZFRQZjd0RnhJVzZqUUFIWlVoUGZDWnhNY1BSeXNnVFNrSjdXQk15Mmc0cmU0TlhlOg==',
+         'Content-Type: application/json'));
+   }
 
    // EXECUTE:
    $result = curl_exec($curl);
