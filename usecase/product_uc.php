@@ -84,7 +84,7 @@ function getProductAll(
         $conn = callDb();
         $array = array();
 
-        $sql = "SELECT f.file_name, c.category_name, p.* 
+        $sql = "SELECT f.file_name, c.category_name, w.latitude, w.longitude, p.* 
         FROM `product` p 
         LEFT JOIN `file` f ON p.image_id = f.file_id 
         LEFT JOIN `category` c ON p.category_id = c.category_id
@@ -191,6 +191,8 @@ function getProductAll(
             if ($dRatingProduct->success) {
                 $data->rating = $dRatingProduct->data;
             }
+            $data->latitude = $row['latitude'];
+            $data->longitude = $row['longitude'];
             $data->createdAt = $row['created_at'];
             array_push($array, $data);
         }
@@ -207,7 +209,7 @@ function getProductMe($warungId) {
         $conn = callDb();
         $array = array();
 
-        $sql = "SELECT f.file_name, c.category_name, p.*
+        $sql = "SELECT f.file_name, c.category_name, w.latitude, w.longitude, p.*
         FROM `product` p 
         LEFT JOIN `file` f ON p.image_id = f.file_id
         LEFT JOIN `category` c ON p.category_id = c.category_id
@@ -245,6 +247,9 @@ function getProductMe($warungId) {
             if ($dRatingProduct->success) {
                 $data->rating = $dRatingProduct->data;
             }
+            $data->latitude = $row['latitude'];
+            $data->longitude = $row['longitude'];
+            $data->createdAt = $row['created_at'];
             array_push($array, $data);
         }
         return resultBody(true, $array);
