@@ -78,7 +78,7 @@ function getAdsAll(
 
             if (!empty($paymentStatus)) {
                 if (strtolower($paymentStatus) == "paid" || strtolower($paymentStatus) == "settled") {
-                    $sql = $sql." AND i.status = 'PAID' OR i.status = 'SETTLED'";    
+                    $sql = $sql." AND (i.status = 'PAID' OR i.status = 'SETTLED')";    
                 } else {
                     $statusPay = strtoupper($paymentStatus);
                     $sql = $sql." AND i.status = '$statusPay'";
@@ -283,30 +283,153 @@ function updateAds($bodyRequest) {
 function adsRevenue($paymentDate = NULL, $paymentStatus = NULL) {
     try {
         $conn = callDb();
-        $sql = "SELECT SUM(amount) as total_amount, COUNT(amount) as total_data FROM `invoice` 
-        WHERE `payment_date` LIKE '%$paymentDate%'"; 
+        
+        $sql = "SELECT 
+        i.amount,
+        i.booking,
+        i.fees,
+        a.*
+        FROM `ads` a
+        LEFT JOIN `warung` w ON a.warung_id = w.warung_id
+        LEFT JOIN `invoice` i ON a.invoice_id = i.invoice_id
+        WHERE i.booking = 0";
+
+        if (!empty($paymentDate)) {
+            $sql = $sql." AND i.payment_date LIKE '%$paymentDate%'"; 
+        }
 
         if (!empty($paymentStatus)) {
             if (strtolower($paymentStatus) == "paid" || strtolower($paymentStatus) == "settled") {
-                $sql = $sql." AND `status` = 'PAID' OR `status` = 'SETTLED'";    
+                $sql = $sql." AND (i.status = 'PAID' OR i.status = 'SETTLED')";    
             } else {
                 $statusPay = strtoupper($paymentStatus);
-                $sql = $sql." AND `status` = '$statusPay'";
+                $sql = $sql." AND i.status = '$statusPay'";
             }
         }
 
-        $sql = $sql." ORDER BY created_at DESC";
+        $sql = $sql." ORDER BY a.created_at DESC";
         $result = $conn->query($sql);
+        $totalAmount = 0;
+        $totalData = 0;
         while($row = $result->fetch_assoc()) {
-            $data = new stdClass();
-            $data->totalAmount =  (int) $row['total_amount'] ?? "0";
-            $data->totalData = (int) $row['total_data'] ?? "0";
-            return resultBody(true, $data);
+            $totalAmount = $totalAmount + ((int) $row['amount'] ?? "0");
+            $totalData = $totalData + 1;
         }
+        $data = new stdClass();
+        $data->totalAmount = $totalAmount;
+        $data->totalData = $totalData;
+        return resultBody(true, $data);
     } catch (Exception $e) {
         $error = $e->getMessage();
         response(500, $error);
         return resultBody();
     }
+}
+
+
+function getAdsAllAdmin(
+    $status = NULL, 
+    $limit = NULL, 
+    $paymentStatus = NULL, 
+    $warungId = NULL
+    ) {
+        try {
+            $conn = callDb();
+            $array = array();
+
+            $sql = "SELECT 
+            f.file_name,
+            w.name as warung_name,
+            w.rating as warung_rating,
+            i.status as payment_status,
+            i.expiry_at as payment_expired,
+            i.payment_date,
+            i.payment_method,
+            i.payment_channel,
+            i.invoice_url,
+            i.amount,
+            i.booking,
+            i.fees,
+            a.*
+            FROM `ads` a
+            LEFT JOIN `file` f ON a.image_id = f.file_id 
+            LEFT JOIN `warung` w ON a.warung_id = w.warung_id
+            LEFT JOIN `invoice` i ON a.invoice_id = i.invoice_id
+            WHERE i.booking = 0";
+
+            if (!empty($status)) {
+                $sql = $sql." AND a.status = '$status'";
+            }
+
+            if (!empty($paymentStatus)) {
+                if (strtolower($paymentStatus) == "paid" || strtolower($paymentStatus) == "settled") {
+                    $sql = $sql." AND (i.status = 'PAID' OR i.status = 'SETTLED')";    
+                } else {
+                    $statusPay = strtoupper($paymentStatus);
+                    $sql = $sql." AND i.status = '$statusPay'";
+                }
+            }
+
+            if (!empty($warungId)) {
+                $sql = $sql." AND a.warung_id = '$warungId'";
+            }
+
+            $sql = $sql." ORDER BY a.created_at DESC";
+            if (!empty($limit)) {
+                $sql = $sql." LIMIT $limit";
+            }
+            
+            $result = $conn->query($sql);
+            while($row = $result->fetch_assoc()) {
+                $data = new stdClass();
+                $data->id = $row['ads_id'];
+                $data->name = $row['name'];
+                $data->description = $row['description'];
+                $data->status = $row['status'];
+                $data->startDate = $row['start_date'];
+                $data->endDate = $row['end_date'];
+                $data->imageId = $row['image_id'];
+                $data->imageUrl = "";
+                if (!empty($row['file_name'])) {
+                    $data->imageUrl = urlPathImage()."".$row["file_name"];
+                }
+                $data->warung = NULL;
+                if (!empty($row['warung_id'])) {
+                    $warung = new stdClass();
+                    $warung->id = $row['warung_id'];
+                    $warung->name = $row['warung_name'];
+                    $warung->rating = (double) $row['warung_rating'];
+                    $dRatingWarung = getAverageRatingWarung($warung->id);
+                    if ($dRatingWarung->success) {
+                        $warung->rating = $dRatingWarung->data;
+                    }
+                    $data->warung = $warung;
+                }
+
+                /// payment invoice
+                $payment = new stdClass();
+                $payment->id = $row['invoice_id'];
+                $payment->amount = (int) $row['amount'];
+                $payment->fees = (int) $row['fees'];
+                $payment->booking = (int) $row['booking'];
+                $payment->status = $row['payment_status'] ?? "";
+                $payment->url = $row['invoice_url'] ?? "";
+                $payment->method = $row['payment_method'] ?? "";
+                $payment->channel = $row['payment_channel'] ?? "";
+                $payment->paymentDate = $row['payment_date'] ?? "";
+                $payment->paymentExpired = $row['payment_expired'] ?? "";
+                $data->invoice = $payment;
+
+                $data->createdAt = $row['created_at'];
+                $data->updatedAt = $row['updated_at'];
+                $data->deletedAt = $row['deleted_at'];
+                array_push($array, $data);
+            }
+            return resultBody(true, $array);
+        } catch (Exception $e) {
+            $error = $e->getMessage();
+            response(500, $error);
+            return resultBody();
+        }
 }
 ?>

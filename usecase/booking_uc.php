@@ -86,7 +86,7 @@ function getBookingAll(
 
             if (!empty($paymentStatus)) {
                 if (strtolower($paymentStatus) == "paid" || strtolower($paymentStatus) == "settled") {
-                    $sql = $sql." AND i.status = 'PAID' OR i.status = 'SETTLED'";    
+                    $sql = $sql." AND (i.status = 'PAID' OR i.status = 'SETTLED')";    
                 } else {
                     $statusPay = strtoupper($paymentStatus);
                     $sql = $sql." AND i.status = '$statusPay'";
@@ -302,6 +302,40 @@ function updateBooking($bodyRequest) {
         $error = $e->getMessage();
         response(500, $error);
         return false;
+    }
+}
+
+function bookingRevenue($paymentDate = NULL, $paymentStatus = NULL) {
+    try {
+        $conn = callDb();
+        $sql = "SELECT SUM(amount) as total_amount, COUNT(amount) as total_data FROM `invoice` 
+        WHERE NOT `booking` = 0"; 
+
+        if (!empty($paymentDate)) {
+            $sql = $sql." AND `payment_date` LIKE '%$paymentDate%'"; 
+        }
+
+        if (!empty($paymentStatus)) {
+            if (strtolower($paymentStatus) == "paid" || strtolower($paymentStatus) == "settled") {
+                $sql = $sql." AND (`status` = 'PAID' OR `status` = 'SETTLED')";    
+            } else {
+                $statusPay = strtoupper($paymentStatus);
+                $sql = $sql." AND `status` = '$statusPay'";
+            }
+        }
+
+        $sql = $sql." ORDER BY created_at DESC";
+        $result = $conn->query($sql);
+        while($row = $result->fetch_assoc()) {
+            $data = new stdClass();
+            $data->totalAmount =  (int) $row['total_amount'] ?? "0";
+            $data->totalData = (int) $row['total_data'] ?? "0";
+            return resultBody(true, $data);
+        }
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        response(500, $error);
+        return resultBody();
     }
 }
 ?>
