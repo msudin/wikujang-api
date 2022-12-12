@@ -74,7 +74,7 @@ function getBookingAll(
             LEFT JOIN `warung` w ON b.warung_id = w.warung_id
             LEFT JOIN `invoice` i ON b.invoice_id = i.invoice_id
             LEFT JOIN `user` u ON b.user_id = u.user_id
-            WHERE (b.deleted_at = '' AND w.deleted_at = '' AND u.deleted_at = '')";
+            WHERE b.deleted_at = ''";
 
             if (!empty($status)) {
                 $sql = $sql." AND b.status = '$status'";
@@ -308,7 +308,7 @@ function updateBooking($bodyRequest) {
 function bookingRevenue($paymentDate = NULL, $paymentStatus = NULL) {
     try {
         $conn = callDb();
-        $sql = "SELECT SUM(amount) as total_amount, COUNT(amount) as total_data FROM `invoice` 
+        $sql = "SELECT SUM(amount) as total_amount, COUNT(amount) as total_data FROM `invoice`
         WHERE NOT `booking` = 0"; 
 
         if (!empty($paymentDate)) {

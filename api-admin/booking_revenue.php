@@ -7,11 +7,12 @@ try {
     if (requestMethod() == "GET") { 
         $date = $_GET['paymentDate'] ?? "";
         $paymentStatus = $_GET['paymentStatus'] ?? NULL;
+        $status = $_GET['status'] ?? NULL;
         $dToken = headerAccessToken();
         if ($dToken != NULL) {
-            $dAds = bookingRevenue($date, $paymentStatus);
-            if ($dAds->success) {
-                response(200, "record found", $dAds->data);
+            $booking = bookingRevenue($date, $paymentStatus);
+            if ($booking->success) {
+                response(200, "record found", $booking->data);
             }
         }
     } else {
