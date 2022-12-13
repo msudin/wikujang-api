@@ -21,7 +21,7 @@ try {
                 $bodyRequest->type = "withdraw";
                 $bodyRequest->status = "";
                 
-                $dRequest = createMutasiBooking($bodyRequest);
+                $dRequest = createMutasi($bodyRequest);
                 if ($dRequest->success) {
                     response(200, "Withdraw sedang di proses, silahkan tunggu 3 x 24 jam");
                 }   
