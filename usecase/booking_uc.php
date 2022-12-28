@@ -351,6 +351,7 @@ function summaryBooking($date = NULL) {
         COUNT(case b.status when 'approved' then 1 else null end) total_approved, 
         COUNT(case i.status when 'PAID' then 1 else null end) total_paid, 
         COUNT(case i.status when 'SETTLED' then 1 else null end) total_settled,
+        COUNT(case i.status when 'PENDING' then 1 else null end) total_pending,
         COUNT(case i.status when 'EXPIRED' then 1 else null end) total_expired,
         COUNT(case b.status when 'rejected' then 1 else null end) total_rejected 
         FROM `warung` w 
@@ -373,6 +374,7 @@ function summaryBooking($date = NULL) {
             $settled = (int) $row['total_settled'] ?? "0";
             $paid = (int) $row['total_paid'] ?? "0";
             $data->totalPaid = $settled + $paid;
+            $data->totalPending = (int) $row['total_pending'] ?? "0";
             $data->totalExpired = (int) $row['total_expired'] ?? "0";
             $data->totalRejected = (int) $row['total_rejected'] ?? "0";
             array_push($array, $data);
