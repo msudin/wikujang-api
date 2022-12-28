@@ -338,4 +338,50 @@ function bookingRevenue($paymentDate = NULL, $paymentStatus = NULL) {
         return resultBody();
     }
 }
+
+function summaryBooking($date = NULL) {
+    try {
+        clearstatcache();
+        $array = array();
+
+        $conn = callDb();
+        $sql = "SELECT w.*, 
+        COUNT(b.warung_id) total_booking,
+        COUNT(case b.status when 'waiting_approval' then 1 else null end) total_waiting,
+        COUNT(case b.status when 'approved' then 1 else null end) total_approved, 
+        COUNT(case i.status when 'PAID' then 1 else null end) total_paid, 
+        COUNT(case i.status when 'SETTLED' then 1 else null end) total_settled,
+        COUNT(case i.status when 'EXPIRED' then 1 else null end) total_expired,
+        COUNT(case b.status when 'rejected' then 1 else null end) total_rejected 
+        FROM `warung` w 
+        LEFT JOIN `booking` b ON w.warung_id = b.warung_id 
+        LEFT JOIN `invoice` i ON b.invoice_id = i.invoice_id"; 
+
+        if (!empty($date)) {
+            $sql = $sql." WHERE b.date LIKE '%$date%'"; 
+        }
+
+        $sql = $sql." GROUP BY w.warung_id ORDER BY total_booking DESC";
+        $result = $conn->query($sql);
+        while($row = $result->fetch_assoc()) {
+            $data = new stdClass();
+            $data->warungId =  $row['warung_id'] ?? "0";
+            $data->warungName =  $row['name'] ?? "0";
+            $data->totalBooking =  (int) $row['total_booking'] ?? "0";
+            $data->totalWaiting =  (int) $row['total_waiting'] ?? "0";
+            $data->totalApproved =  (int) $row['total_approved'] ?? "0";
+            $settled = (int) $row['total_settled'] ?? "0";
+            $paid = (int) $row['total_paid'] ?? "0";
+            $data->totalPaid = $settled + $paid;
+            $data->totalExpired = (int) $row['total_expired'] ?? "0";
+            $data->totalRejected = (int) $row['total_rejected'] ?? "0";
+            array_push($array, $data);
+        }
+        return resultBody(true, $array);
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        response(500, $error);
+        return resultBody();
+    }
+}
 ?>
